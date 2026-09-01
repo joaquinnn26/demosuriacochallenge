@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import { DestinationMap } from "@/components/DestinationMap";
 import { SectionHeading } from "@/components/SectionHeading";
 import { destinations } from "@/data/destinations";
+import { readPublicActivitiesFromStore } from "@/lib/activityStore";
 
 export const metadata: Metadata = {
   title: "Destinos",
   description: "Mapa de destinos finales para salidas de Suriaco Challenge."
 };
 
-export default function DestinationsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function DestinationsPage() {
+  const activities = await readPublicActivitiesFromStore();
+
   return (
     <main className="pt-16">
       <section className="bg-carbon py-20 text-fog">
@@ -23,7 +28,7 @@ export default function DestinationsPage() {
       </section>
       <section className="bg-fog py-16">
         <div className="section-shell">
-          <DestinationMap />
+          <DestinationMap initialActivities={activities} />
         </div>
       </section>
       <section className="bg-white py-20">

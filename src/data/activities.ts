@@ -1,30 +1,52 @@
 export type ActivityCategory =
   | "trekking"
   | "astronomia"
-  | "camping"
-  | "montana"
-  | "familia"
-  | "viajes"
-  | "grupos"
-  | "especiales";
+  | "invernales"
+  | "escalada"
+  | "viajes";
 
 export type ActivityDifficulty = "Fácil" | "Media" | "Difícil";
-export type ActivityDuration = "Medio día" | "1 día" | "Fin de semana" | "Varios días";
+export type ActivityDuration = "1 día" | "Más de 1 día";
+
+export type ActivityFilter =
+  | "un-dia"
+  | "pernocta"
+  | "madrid-centro"
+  | "espana"
+  | "europa-africa"
+  | "sudamerica"
+  | "argentina"
+  | "trekking"
+  | "invernales"
+  | "escalada"
+  | "astronomia-picos";
 
 export type Activity = {
   slug: string;
   name: string;
   category: ActivityCategory;
+  filters: ActivityFilter[];
+  status?: "published" | "draft" | "archived";
   location: string;
+  googleMapsUrl?: string;
+  latitude?: number;
+  longitude?: number;
   difficulty: ActivityDifficulty;
   duration: ActivityDuration;
+  durationDays?: number;
   distance: string;
+  distanceKm?: number;
   elevation: string;
+  elevationM?: number;
   minAge: string;
+  minAgeYears?: number;
   maxParticipants: string;
+  maxParticipantsCount?: number;
   price: string;
   nextDate: string;
+  nextDateIso?: string;
   image: string;
+  images?: string[];
   imageAlt: string;
   summary: string;
   description: string;
@@ -37,214 +59,283 @@ export type Activity = {
 export const categoryLabels: Record<ActivityCategory, string> = {
   trekking: "Trekking",
   astronomia: "Astronomía",
-  camping: "Camping / Vivac",
-  montana: "Montaña",
-  familia: "Familia",
-  viajes: "Viajes",
-  grupos: "Empresas / grupos",
-  especiales: "Especiales"
+  invernales: "Invernales",
+  escalada: "Escalada",
+  viajes: "Viajes"
 };
+
+export const filterLabels: Record<ActivityFilter, string> = {
+  "un-dia": "Actividades de 1 día",
+  pernocta: "Actividades de más de 1 día (con pernocta)",
+  "madrid-centro": "Actividades Madrid / centro de España",
+  espana: "Actividades en España",
+  "europa-africa": "Actividades en Europa-África",
+  sudamerica: "Actividades en Sudamérica",
+  argentina: "Actividades en Argentina",
+  trekking: "Trekking",
+  invernales: "Invernales (raquetas-alpinismo)",
+  escalada: "Escalada",
+  "astronomia-picos": "Astronomía en picos de Montaña"
+};
+
+export const filterOrder: ActivityFilter[] = [
+  "un-dia",
+  "pernocta",
+  "madrid-centro",
+  "espana",
+  "europa-africa",
+  "sudamerica",
+  "argentina",
+  "trekking",
+  "invernales",
+  "escalada",
+  "astronomia-picos"
+];
 
 export const activities: Activity[] = [
   {
-    slug: "trekking-cumbre-suriaco",
-    name: "Trekking Cumbre Suriaco",
-    category: "trekking",
-    location: "Cumbre Suriaco, Córdoba",
-    difficulty: "Media",
-    duration: "1 día",
-    distance: "14 km",
-    elevation: "+750 m",
-    minAge: "12 años",
-    maxParticipants: "12 personas",
-    price: "Consultar valor",
-    nextDate: "Próxima fecha a confirmar",
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
-    imageAlt: "Grupo caminando por sendero de montaña al atardecer",
-    summary:
-      "Una salida de día completo para llegar a un punto panorámico y vivir el ritmo real de la montaña.",
-    description:
-      "La propuesta combina caminata, pausas de interpretación del entorno y acompañamiento profesional durante toda la salida. Es una buena opción para personas con estado físico activo que quieren una experiencia exigente pero alcanzable.",
-    routePoints: ["Punto de encuentro", "Inicio del sendero", "Mirador intermedio", "Cumbre Suriaco", "Regreso guiado"],
-    includes: ["Guía a cargo del grupo", "Coordinación previa", "Botiquín de primeros auxilios", "Asistencia durante la actividad"],
-    requiredGear: ["Calzado de trekking", "Agua", "Mochila chica", "Abrigo"],
-    recommendedGear: ["Gorra", "Gafas", "Bastones", "Protección solar"]
-  },
-  {
-    slug: "trekking-astronomico",
-    name: "Trekking Astronómico",
+    slug: "trekking-con-astronomia",
+    name: "Trekking con astronomía",
     category: "astronomia",
-    location: "Campamento Cielo, Suriaco",
+    filters: ["un-dia", "madrid-centro", "espana", "trekking", "astronomia-picos"],
+    location: "Sierra de Guadarrama, Madrid",
+    googleMapsUrl: "https://www.google.com/maps?q=40.7930,-3.9760",
+    latitude: 40.793,
+    longitude: -3.976,
     difficulty: "Fácil",
-    duration: "Medio día",
-    distance: "3 km",
-    elevation: "+80 m",
-    minAge: "8 años",
-    maxParticipants: "18 personas",
+    duration: "1 día",
+    durationDays: 1,
+    distance: "Caminata suave",
+    elevation: "A confirmar",
+    minAge: "Consultar",
+    maxParticipants: "Cupo limitado",
     price: "Consultar valor",
-    nextDate: "Próxima fecha a confirmar",
+    nextDate: "29 ago, 5/12/19 sep y 3 oct",
     image:
       "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=1400&q=80",
     imageAlt: "Cielo nocturno estrellado sobre silueta de montañas",
     summary:
-      "Una caminata suave al atardecer con observación del cielo y cierre nocturno.",
+      "Salida de trekking al atardecer con observación astronómica guiada desde zona de montaña.",
     description:
-      "Pensada para quienes buscan una salida tranquila y visual. El ritmo es amable, con tiempo para llegar al punto de observación, acomodarse y reconocer constelaciones, planetas y referencias del cielo nocturno.",
-    routePoints: ["Punto de encuentro", "Caminata corta", "Campamento Cielo", "Observación guiada", "Regreso"],
-    includes: ["Guía/coordinador", "Coordinación previa", "Orientación durante la observación", "Asistencia durante la actividad"],
-    requiredGear: ["Calzado cómodo", "Agua", "Abrigo", "Linterna"],
-    recommendedGear: ["Manta ligera", "Gorro", "Cámara", "Repelente"]
+      "Una propuesta de día para caminar a ritmo tranquilo, llegar con luz al punto de observación y dedicar la noche a reconocer cielo, constelaciones y referencias astronómicas. Las fechas se cargan en una sola actividad para evitar duplicar fichas.",
+    routePoints: ["Encuentro del grupo", "Caminata de aproximación", "Punto alto de observación", "Astronomía guiada", "Regreso"],
+    includes: ["Guía/coordinador", "Planificación de horarios", "Orientación astronómica", "Asistencia durante la actividad"],
+    requiredGear: ["Calzado de trekking", "Agua", "Abrigo", "Linterna frontal"],
+    recommendedGear: ["Manta ligera", "Gorro", "Cámara", "Snack"]
   },
   {
-    slug: "noche-bajo-las-estrellas",
-    name: "Noche bajo las estrellas",
-    category: "camping",
-    location: "Zona de vivac Suriaco",
+    slug: "navalmedio-12k",
+    name: "12K Navalmedio",
+    category: "trekking",
+    filters: ["un-dia", "madrid-centro", "espana", "trekking"],
+    location: "Navalmedio, Sierra de Guadarrama",
+    googleMapsUrl: "https://www.google.com/maps?q=40.7590,-4.0190",
+    latitude: 40.759,
+    longitude: -4.019,
     difficulty: "Media",
-    duration: "Fin de semana",
-    distance: "10 km",
-    elevation: "+420 m",
-    minAge: "14 años",
-    maxParticipants: "10 personas",
-    price: "Consultar valor",
-    nextDate: "Próxima fecha a confirmar",
-    image:
-      "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=1400&q=80",
-    imageAlt: "Carpa iluminada en un paisaje natural durante la noche",
-    summary:
-      "Vivac, atardecer, noche de montaña y amanecer para bajar el ritmo.",
-    description:
-      "Una experiencia para pasar más tiempo en la naturaleza y aprender cómo organizar una noche al aire libre con criterio. Incluye caminata de aproximación, armado del espacio y regreso guiado al día siguiente.",
-    routePoints: ["Encuentro", "Sendero de aproximación", "Zona de vivac", "Amanecer", "Regreso"],
-    includes: ["Guía a cargo del grupo", "Coordinación previa", "Orientación sobre armado de vivac", "Asistencia durante la actividad"],
-    requiredGear: ["Calzado de trekking", "Agua", "Mochila", "Abrigo", "Bolsa de dormir"],
-    recommendedGear: ["Linterna frontal", "Aislante", "Gorra", "Protección solar"]
-  },
-  {
-    slug: "trekking-gastronomico",
-    name: "Trekking gastronómico",
-    category: "especiales",
-    location: "Mirador del Valle, Suriaco",
-    difficulty: "Fácil",
     duration: "1 día",
-    distance: "7 km",
-    elevation: "+220 m",
-    minAge: "10 años",
-    maxParticipants: "16 personas",
+    durationDays: 1,
+    distance: "12 km",
+    distanceKm: 12,
+    elevation: "A confirmar",
+    minAge: "Consultar",
+    maxParticipants: "Cupo limitado",
     price: "Consultar valor",
-    nextDate: "Próxima fecha a confirmar",
+    nextDate: "4 de octubre",
     image:
-      "https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1400&q=80",
-    imageAlt: "Mesa rústica de comida al aire libre con paisaje de montaña",
+      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Sendero de montaña con vistas abiertas",
     summary:
-      "Senderos suaves, paisaje y una pausa gastronómica para compartir en grupo.",
+      "Trekking de 12 km por Navalmedio, pensado para quienes buscan una salida de día en la sierra.",
     description:
-      "La salida cruza caminata, entorno natural y una experiencia de encuentro. Es ideal para grupos que quieren una actividad accesible, con tiempo para conversar, disfrutar el paisaje y cerrar con una propuesta gastronómica.",
-    routePoints: ["Encuentro", "Sendero interpretativo", "Mirador del Valle", "Pausa gastronómica", "Regreso"],
-    includes: ["Guía a cargo del grupo", "Coordinación previa", "Pausa planificada", "Asistencia durante la actividad"],
-    requiredGear: ["Calzado cómodo", "Agua", "Mochila chica", "Abrigo"],
-    recommendedGear: ["Gorra", "Gafas", "Protección solar", "Cámara"]
+      "Actividad de una jornada en el entorno de Navalmedio. Antes de reservar se confirma punto de encuentro, ritmo del grupo, desnivel final y equipo necesario según condiciones de la fecha.",
+    routePoints: ["Punto de encuentro", "Inicio del sendero", "Tramo principal", "Pausa panorámica", "Regreso"],
+    includes: ["Guía a cargo del grupo", "Coordinación previa", "Botiquín de primeros auxilios", "Asistencia durante la actividad"],
+    requiredGear: ["Calzado de trekking", "Agua", "Mochila chica", "Abrigo"],
+    recommendedGear: ["Bastones", "Gafas", "Protección solar", "Snack"]
   },
   {
-    slug: "fin-de-semana-suriaco",
-    name: "Fin de semana Suriaco",
-    category: "viajes",
-    location: "Suriaco, Córdoba",
+    slug: "las-machotas-escorial-14k",
+    name: "14K Las Machotas, El Escorial",
+    category: "trekking",
+    filters: ["un-dia", "madrid-centro", "espana", "trekking"],
+    location: "El Escorial, Madrid",
+    googleMapsUrl: "https://www.google.com/maps?q=40.5860,-4.1470",
+    latitude: 40.586,
+    longitude: -4.147,
     difficulty: "Media",
-    duration: "Fin de semana",
-    distance: "Variable según salida",
-    elevation: "Variable según salida",
-    minAge: "16 años",
-    maxParticipants: "14 personas",
+    duration: "1 día",
+    durationDays: 1,
+    distance: "14 km",
+    distanceKm: 14,
+    elevation: "A confirmar",
+    minAge: "Consultar",
+    maxParticipants: "Cupo limitado",
     price: "Consultar valor",
-    nextDate: "Próxima fecha a confirmar",
+    nextDate: "24 de octubre",
     image:
       "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=1400&q=80",
     imageAlt: "Montañistas observando un valle desde una cumbre",
     summary:
-      "Dos días de senderos, descanso, comunidad y naturaleza con logística guiada.",
+      "Recorrido de 14 km por Las Machotas, con salida en la zona de El Escorial.",
     description:
-      "Un formato extendido para quienes quieren salir de la rutina y vivir la montaña con más profundidad. La experiencia combina actividad física, pausas, convivencia de grupo y organización previa para llegar preparados.",
-    routePoints: ["Salida", "Actividad día 1", "Descanso grupal", "Actividad día 2", "Regreso"],
+      "Una salida de trekking de jornada completa con distancia moderada y terreno serrano. La ficha concentra la información base y permite ajustar detalles operativos cuando se confirme cada grupo.",
+    routePoints: ["Encuentro", "Aproximación", "Las Machotas", "Descanso de ruta", "Regreso guiado"],
     includes: ["Guía a cargo del grupo", "Coordinación previa", "Planificación de horarios", "Asistencia durante la actividad"],
-    requiredGear: ["Calzado de trekking", "Agua", "Mochila", "Abrigo", "Bolso de viaje"],
+    requiredGear: ["Calzado de trekking", "Agua", "Mochila chica", "Abrigo"],
     recommendedGear: ["Bastones", "Gorra", "Gafas", "Protección solar"]
   },
   {
-    slug: "experiencia-familiar-suriaco",
-    name: "Experiencia familiar Suriaco",
-    category: "familia",
-    location: "Reserva natural Suriaco",
-    difficulty: "Fácil",
-    duration: "Medio día",
-    distance: "4 km",
-    elevation: "+90 m",
-    minAge: "6 años",
-    maxParticipants: "20 personas",
+    slug: "ribeira-sacra-galicia",
+    name: "Ribeira Sacra, Galicia",
+    category: "viajes",
+    filters: ["pernocta", "espana", "trekking"],
+    location: "Ribeira Sacra, Galicia",
+    googleMapsUrl: "https://www.google.com/maps?q=42.4150,-7.6200",
+    latitude: 42.415,
+    longitude: -7.62,
+    difficulty: "Media",
+    duration: "Más de 1 día",
+    durationDays: 4,
+    distance: "Variable según jornada",
+    elevation: "Variable según jornada",
+    minAge: "Consultar",
+    maxParticipants: "Cupo limitado",
     price: "Consultar valor",
-    nextDate: "Próxima fecha a confirmar",
+    nextDate: "9 al 12 de octubre",
     image:
-      "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=1400&q=80",
-    imageAlt: "Familia caminando por sendero entre montañas",
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Paisaje verde de montaña y valle",
     summary:
-      "Una salida accesible para compartir naturaleza, aprendizaje y movimiento.",
+      "Viaje de varios días a Galicia, con base en Ribeira Sacra y actividades de naturaleza.",
     description:
-      "Actividad pensada para familias que quieren tener una primera experiencia al aire libre con ritmo amable. El foco está en caminar, observar, aprender y volver con una referencia clara de cómo prepararse para futuras salidas.",
-    routePoints: ["Encuentro", "Sendero corto", "Actividad interpretativa", "Descanso", "Regreso"],
-    includes: ["Guía/coordinador", "Coordinación previa", "Actividad interpretativa", "Asistencia durante la actividad"],
-    requiredGear: ["Calzado cómodo", "Agua", "Abrigo", "Mochila pequeña"],
-    recommendedGear: ["Gorra", "Protección solar", "Snack", "Repelente"]
+      "Programa con pernocta para combinar caminatas, paisaje y organización logística durante varios días. La duración exacta se comunica en la reserva según noches confirmadas y formato final del viaje.",
+    routePoints: ["Llegada del grupo", "Actividad día 1", "Actividad día 2", "Actividad día 3", "Regreso"],
+    includes: ["Guía/coordinación", "Planificación previa", "Itinerario de actividades", "Asistencia durante el viaje"],
+    requiredGear: ["Calzado de trekking", "Mochila", "Abrigo", "Bolso de viaje"],
+    recommendedGear: ["Bastones", "Impermeable", "Gafas", "Protección solar"]
   },
   {
-    slug: "salida-para-empresas",
-    name: "Salida para empresas",
-    category: "grupos",
-    location: "Destino definido según grupo",
-    difficulty: "Fácil",
+    slug: "cueva-valiente-san-rafael-14k",
+    name: "Cueva Valiente - San Rafael 14K",
+    category: "trekking",
+    filters: ["un-dia", "madrid-centro", "espana", "trekking"],
+    location: "San Rafael, Segovia",
+    googleMapsUrl: "https://www.google.com/maps?q=40.7180,-4.1810",
+    latitude: 40.718,
+    longitude: -4.181,
+    difficulty: "Media",
     duration: "1 día",
-    distance: "A medida",
-    elevation: "A medida",
-    minAge: "Adultos",
-    maxParticipants: "A definir",
-    price: "Presupuesto a medida",
-    nextDate: "A coordinar",
+    durationDays: 1,
+    distance: "14 km",
+    distanceKm: 14,
+    elevation: "A confirmar",
+    minAge: "Consultar",
+    maxParticipants: "Cupo limitado",
+    price: "Consultar valor",
+    nextDate: "7 de noviembre",
+    image:
+      "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Grupo caminando por sendero entre montañas",
+    summary:
+      "Trekking de 14 km desde San Rafael hacia Cueva Valiente, en el centro de España.",
+    description:
+      "Salida de día completo para caminar por terreno de sierra con ritmo de grupo. Se revisa condición física, meteorología y equipo antes de confirmar la reserva.",
+    routePoints: ["Encuentro en San Rafael", "Inicio de ruta", "Cueva Valiente", "Pausa de montaña", "Regreso"],
+    includes: ["Guía a cargo del grupo", "Coordinación previa", "Botiquín de primeros auxilios", "Asistencia durante la actividad"],
+    requiredGear: ["Calzado de trekking", "Agua", "Mochila chica", "Abrigo"],
+    recommendedGear: ["Bastones", "Gorra", "Gafas", "Protección solar"]
+  },
+  {
+    slug: "robledondo-14k",
+    name: "Robledondo 14K",
+    category: "trekking",
+    filters: ["un-dia", "madrid-centro", "espana", "trekking"],
+    location: "Robledondo, Comunidad de Madrid",
+    googleMapsUrl: "https://www.google.com/maps?q=40.5810,-4.2100",
+    latitude: 40.581,
+    longitude: -4.21,
+    difficulty: "Media",
+    duration: "1 día",
+    durationDays: 1,
+    distance: "14 km",
+    distanceKm: 14,
+    elevation: "A confirmar",
+    minAge: "Consultar",
+    maxParticipants: "Cupo limitado",
+    price: "Consultar valor",
+    nextDate: "28 de noviembre",
     image:
       "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1400&q=80",
     imageAlt: "Grupo caminando en fila por sendero de montaña",
     summary:
-      "Experiencias de grupo para equipos, universidades y organizaciones.",
+      "Salida de trekking de 14 km por Robledondo para cerrar la temporada de otoño.",
     description:
-      "Formato adaptable para objetivos de integración, bienestar, liderazgo o celebración. La propuesta se define según cantidad de personas, perfil del grupo, movilidad, tiempos disponibles y nivel de dificultad buscado.",
-    routePoints: ["Brief inicial", "Actividad principal", "Pausa de grupo", "Cierre", "Regreso"],
-    includes: ["Diseño de actividad", "Coordinación previa", "Guía a cargo del grupo", "Asistencia durante la actividad"],
-    requiredGear: ["Calzado cómodo", "Agua", "Abrigo", "Mochila"],
-    recommendedGear: ["Gorra", "Protección solar", "Cuaderno si corresponde", "Ropa cómoda"]
+      "Una actividad de jornada completa en la sierra madrileña. La información operativa se confirma con el grupo inscrito para ajustar horario, punto de encuentro y material requerido.",
+    routePoints: ["Encuentro", "Inicio de sendero", "Tramo de montaña", "Pausa panorámica", "Regreso"],
+    includes: ["Guía a cargo del grupo", "Coordinación previa", "Planificación de ruta", "Asistencia durante la actividad"],
+    requiredGear: ["Calzado de trekking", "Agua", "Mochila chica", "Abrigo"],
+    recommendedGear: ["Bastones", "Gorra", "Gafas", "Protección solar"]
   },
   {
-    slug: "travesia-varios-dias",
-    name: "Travesía de varios días",
+    slug: "argentina-cordoba-champaqui-finca-carranza",
+    name: "Argentina: Córdoba, Finca Carranza y Champaquí",
     category: "viajes",
-    location: "Región serrana a definir",
-    difficulty: "Difícil",
-    duration: "Varios días",
-    distance: "A definir",
-    elevation: "A definir",
-    minAge: "18 años",
-    maxParticipants: "10 personas",
+    filters: ["pernocta", "sudamerica", "argentina", "trekking"],
+    location: "Córdoba, Argentina",
+    googleMapsUrl: "https://www.google.com/maps?q=-31.4201,-64.1888",
+    latitude: -31.4201,
+    longitude: -64.1888,
+    difficulty: "Media",
+    duration: "Más de 1 día",
+    durationDays: 14,
+    distance: "Programa de 13-14 días",
+    elevation: "Según etapa",
+    minAge: "Consultar",
+    maxParticipants: "Cupo limitado",
     price: "Consultar valor",
-    nextDate: "Próxima fecha a confirmar",
+    nextDate: "Febrero de 2027",
     image:
       "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80",
     imageAlt: "Cordillera con cumbres y valle bajo luz fría",
     summary:
-      "Una travesía más exigente para vivir varios días de montaña, ruta y comunidad.",
+      "Viaje a Córdoba con Finca Carranza, Champaquí y naturaleza serrana durante febrero de 2027.",
     description:
-      "Experiencia de mayor compromiso físico y logístico. Antes de reservar se revisan experiencia previa, equipo disponible, condición física y expectativas del grupo para confirmar si la salida es adecuada.",
-    routePoints: ["Día 1 aproximación", "Día 2 travesía", "Día 3 objetivo principal", "Día 4 regreso"],
-    includes: ["Guía a cargo del grupo", "Coordinación previa", "Planificación logística", "Asistencia durante la actividad"],
-    requiredGear: ["Calzado técnico", "Agua", "Mochila", "Abrigo", "Equipo personal completo"],
-    recommendedGear: ["Bastones", "Gafas", "Protección solar", "Linterna frontal"]
+      "Programa extendido en Argentina para combinar viaje, montaña y experiencia local. La propuesta final contempla entre 13 y 14 días, con logística y requisitos comunicados antes de la reserva.",
+    routePoints: ["Llegada a Córdoba", "Finca Carranza", "Etapas de trekking", "Champaquí", "Cierre y regreso"],
+    includes: ["Coordinación del viaje", "Planificación previa", "Guía durante actividades", "Asistencia durante el programa"],
+    requiredGear: ["Calzado de trekking", "Mochila", "Abrigo", "Equipo personal de viaje"],
+    recommendedGear: ["Bastones", "Impermeable", "Gafas", "Protección solar"]
+  },
+  {
+    slug: "raquetas-nieve-guadarrama-sierra-norte",
+    name: "Raquetas en nieve",
+    category: "invernales",
+    filters: ["un-dia", "madrid-centro", "espana", "invernales"],
+    location: "Sierra de Guadarrama y Sierra Norte",
+    googleMapsUrl: "https://www.google.com/maps?q=40.7930,-3.9760",
+    latitude: 40.793,
+    longitude: -3.976,
+    difficulty: "Fácil",
+    duration: "1 día",
+    durationDays: 1,
+    distance: "Variable según nieve",
+    elevation: "Variable según ruta",
+    minAge: "Consultar",
+    maxParticipants: "Cupo limitado",
+    price: "Consultar valor",
+    nextDate: "Desde diciembre, sábados y domingos",
+    image:
+      "https://images.unsplash.com/photo-1489447068241-b3490214e879?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Montaña nevada con huellas sobre la nieve",
+    summary:
+      "Salidas invernales con raquetas de nieve todos los fines de semana desde diciembre.",
+    description:
+      "Actividad de invierno sujeta a condiciones de nieve. Se programa sábados y domingos en Sierra de Guadarrama o Sierra Norte, definiendo ruta final según meteorología, estado del terreno y nivel del grupo.",
+    routePoints: ["Confirmación de condiciones", "Punto de encuentro", "Inicio con raquetas", "Ruta invernal", "Regreso"],
+    includes: ["Guía a cargo del grupo", "Coordinación previa", "Planificación según nieve", "Asistencia durante la actividad"],
+    requiredGear: ["Ropa de abrigo", "Calzado impermeable", "Agua", "Guantes"],
+    recommendedGear: ["Gafas de sol", "Gorro", "Protección solar", "Snack"]
   }
 ];
 

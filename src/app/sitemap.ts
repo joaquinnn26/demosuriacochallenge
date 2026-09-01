@@ -1,8 +1,11 @@
 import type { MetadataRoute } from "next";
-import { activities } from "@/data/activities";
 import { siteConfig } from "@/data/site";
+import { readActivitiesFromStore } from "@/lib/activityStore";
+import { isPublicActivity } from "@/lib/activityUtils";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = "force-dynamic";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/experiencias",
@@ -14,13 +17,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/opiniones",
     "/contacto"
   ];
+  const activities = await readActivitiesFromStore();
 
   return [
     ...staticRoutes.map((route) => ({
       url: `${siteConfig.baseUrl}${route}`,
       lastModified: new Date()
     })),
-    ...activities.map((activity) => ({
+    ...activities.filter(isPublicActivity).map((activity) => ({
       url: `${siteConfig.baseUrl}/experiencias/${activity.slug}`,
       lastModified: new Date()
     }))

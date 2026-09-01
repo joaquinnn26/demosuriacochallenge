@@ -85,6 +85,12 @@ a {
   animation: fadeIn 700ms ease both;
 }
 
+@layer components {
+  .admin-action-button {
+    @apply focus-ring rounded-full border border-carbon/15 px-3 py-2 text-xs font-black uppercase tracking-wide transition hover:border-pine;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

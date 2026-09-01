@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ActivityDetail } from "@/components/ActivityDetail";
-import { activities, getActivityBySlug } from "@/data/activities";
+import { activities } from "@/data/activities";
+import { getActivityBySlugFromStore } from "@/lib/activityStore";
+import { isPublicActivity } from "@/lib/activityUtils";
 
 type PageProps = {
   params: {
@@ -9,13 +11,16 @@ type PageProps = {
   };
 };
 
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+
 export function generateStaticParams() {
   return activities.map((activity) => ({ slug: activity.slug }));
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const activity = getActivityBySlug(params.slug);
-  if (!activity) return {};
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const activity = await getActivityBySlugFromStore(params.slug);
+  if (!activity || !isPublicActivity(activity)) return {};
 
   return {
     title: activity.name,
@@ -28,9 +33,9 @@ export function generateMetadata({ params }: PageProps): Metadata {
   };
 }
 
-export default function ActivityPage({ params }: PageProps) {
-  const activity = getActivityBySlug(params.slug);
-  if (!activity) notFound();
+export default async function ActivityPage({ params }: PageProps) {
+  const activity = await getActivityBySlugFromStore(params.slug);
+  if (!activity || !isPublicActivity(activity)) notFound();
 
   return <ActivityDetail activity={activity} />;
 }

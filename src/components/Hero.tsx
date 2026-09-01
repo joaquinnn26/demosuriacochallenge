@@ -15,13 +15,13 @@ export function Hero() {
       <div className="section-shell relative flex min-h-[94svh] items-center justify-center pb-28 pt-28 text-center">
         <div className="fade-in mx-auto max-w-4xl">
           <p className="mx-auto inline-flex rounded-full bg-moss px-5 py-2 text-xs font-black uppercase tracking-wide text-fog">
-            Trekking y aventura
+            Agenda de trekking y aventura
           </p>
           <h1 className="mt-6 font-display text-5xl font-black uppercase leading-none md:text-7xl">
-            Vivi la montana. Nosotros te guiamos.
+            Viví la montaña. Nosotros te guiamos.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-xl font-semibold leading-8 text-fog/86 md:text-2xl">
-            Trekking, ascensos y aventuras acompanadas por guias profesionales.
+            Salidas de 1 día, viajes con pernocta, nieve, escalada y astronomía con guías profesionales.
           </p>
           <div className="mt-9 flex justify-center">
             <ButtonLink href="/contacto" variant="whatsapp">

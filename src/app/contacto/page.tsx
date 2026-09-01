@@ -13,8 +13,8 @@ export default function ContactPage() {
         <div className="section-shell">
           <SectionHeading
             eyebrow="Contacto"
-            title="Hablemos de tu proxima salida"
-            body="Contanos qué experiencia te interesa y te respondemos con fechas, dificultad, requisitos y disponibilidad."
+            title="Hablemos de tu próxima salida"
+            body="Contanos qué actividad te interesa y te respondemos con fechas, dificultad, requisitos y disponibilidad."
             light
           />
         </div>
@@ -26,23 +26,23 @@ export default function ContactPage() {
             <dl className="mt-6 grid gap-4">
               <div>
                 <dt className="text-xs font-black uppercase tracking-wide text-carbon/50">WhatsApp</dt>
-                <dd className="mt-1 font-bold">Consulta desde el boton de contacto</dd>
+                <dd className="mt-1 font-bold">Consulta desde el botón de contacto</dd>
               </div>
               <div>
                 <dt className="text-xs font-black uppercase tracking-wide text-carbon/50">Email</dt>
                 <dd className="mt-1 font-bold">Disponible a pedido</dd>
               </div>
               <div>
-                <dt className="text-xs font-black uppercase tracking-wide text-carbon/50">Ubicación</dt>
-                <dd className="mt-1 font-bold">Suriaco, Cordoba</dd>
+                <dt className="text-xs font-black uppercase tracking-wide text-carbon/50">Zonas</dt>
+                <dd className="mt-1 font-bold">Madrid, España, Europa-África, Sudamérica y Argentina</dd>
               </div>
             </dl>
           </div>
 
           <form className="rounded-sm bg-white p-7 shadow-sm">
-            <h2 className="font-display text-3xl font-black uppercase">Consulta rapida</h2>
+            <h2 className="font-display text-3xl font-black uppercase">Consulta rápida</h2>
             <p className="mt-3 text-carbon/65">
-              Inclui fecha estimada, cantidad de personas y nivel de experiencia para recibir una recomendacion mas precisa.
+              Incluí fecha estimada, cantidad de personas y nivel de experiencia para recibir una recomendación más precisa.
             </p>
             <div className="mt-6 grid gap-4">
               <label className="grid gap-2">
@@ -50,19 +50,22 @@ export default function ContactPage() {
                 <input className="focus-ring rounded-xl border border-carbon/15 bg-fog px-4 py-3" name="name" placeholder="Tu nombre" />
               </label>
               <label className="grid gap-2">
-                <span className="text-sm font-bold">Email o telefono</span>
-                <input className="focus-ring rounded-xl border border-carbon/15 bg-fog px-4 py-3" name="contact" placeholder="Como te contactamos" />
+                <span className="text-sm font-bold">Email o teléfono</span>
+                <input className="focus-ring rounded-xl border border-carbon/15 bg-fog px-4 py-3" name="contact" placeholder="Cómo te contactamos" />
               </label>
               <label className="grid gap-2">
-                <span className="text-sm font-bold">Experiencia de interes</span>
+                <span className="text-sm font-bold">Actividad de interés</span>
                 <select className="focus-ring rounded-xl border border-carbon/15 bg-fog px-4 py-3" name="experience" defaultValue="">
                   <option value="" disabled>
                     Seleccionar
                   </option>
+                  <option>Actividad de 1 día</option>
+                  <option>Actividad con pernocta</option>
                   <option>Trekking</option>
-                  <option>Astronomía</option>
-                  <option>Camping / Vivac</option>
-                  <option>Empresas / grupos</option>
+                  <option>Invernales / raquetas / alpinismo</option>
+                  <option>Escalada</option>
+                  <option>Astronomía en picos de montaña</option>
+                  <option>Viaje Argentina 2027</option>
                 </select>
               </label>
               <label className="grid gap-2">

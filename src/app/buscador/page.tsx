@@ -1,16 +1,20 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { AdventureFinder } from "@/components/AdventureFinder";
+import { readPublicActivitiesFromStore } from "@/lib/activityStore";
 
 export const metadata: Metadata = {
-  title: "Buscador de aventuras",
-  description: "Encuentra experiencias compatibles por tipo de aventura, duración y dificultad."
+  title: "Buscador de actividades",
+  description: "Filtra próximas actividades por duración, zona, tipo de salida y dificultad."
 };
 
-export default function FinderPage() {
+export const dynamic = "force-dynamic";
+
+export default async function FinderPage() {
+  const activities = await readPublicActivitiesFromStore();
+
   return (
     <main className="pt-16">
-      <AdventureFinder />
+      <AdventureFinder initialActivities={activities} />
     </main>
   );
 }
-

@@ -1,25 +1,38 @@
 import type { Activity } from "@/data/activities";
 import { categoryLabels } from "@/data/activities";
+import {
+  formatActivityDate,
+  formatActivityDistance,
+  formatActivityDuration,
+  formatActivityElevation,
+  formatActivityMinAge,
+  formatActivityParticipants,
+  getGenericRoutePoints
+} from "@/lib/activityUtils";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { InfoCard } from "./InfoCard";
 import { ButtonLink } from "./ButtonLink";
 
 export function ActivityDetail({ activity }: { activity: Activity }) {
+  const images = activity.images?.length ? activity.images.slice(0, 3) : [activity.image];
+  const mainImage = images[0] ?? activity.image;
+  const routePoints = getGenericRoutePoints(activity);
   const info = [
+    ["Próxima fecha", formatActivityDate(activity)],
     ["Ubicación", activity.location],
-    ["Duración", activity.duration],
-    ["Distancia", activity.distance],
-    ["Desnivel", activity.elevation],
+    ["Duración", formatActivityDuration(activity)],
+    ["Distancia", formatActivityDistance(activity)],
+    ["Desnivel", formatActivityElevation(activity)],
     ["Dificultad", activity.difficulty],
-    ["Edad minima", activity.minAge],
-    ["Participantes", activity.maxParticipants],
+    ["Edad mínima", formatActivityMinAge(activity)],
+    ["Participantes", formatActivityParticipants(activity)],
     ["Precio", activity.price]
   ];
 
   return (
     <main>
       <section className="relative min-h-[72svh] bg-carbon text-fog">
-        <img src={activity.image} alt={activity.imageAlt} className="absolute inset-0 h-full w-full object-cover" />
+        <img src={mainImage} alt={activity.imageAlt} className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-carbon/58" />
         <div className="section-shell relative flex min-h-[72svh] items-end pb-14 pt-28">
           <div className="max-w-4xl">
@@ -37,7 +50,7 @@ export function ActivityDetail({ activity }: { activity: Activity }) {
 
       <section className="bg-fog py-14">
         <div className="section-shell">
-          <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {info.map(([label, value]) => (
               <InfoCard key={label} label={label} value={value} />
             ))}
@@ -50,7 +63,7 @@ export function ActivityDetail({ activity }: { activity: Activity }) {
           <div>
             <p className="eyebrow">Experiencia</p>
             <h2 className="mt-3 font-display text-4xl font-black uppercase leading-none">
-              En qué consiste?
+              ¿En qué consiste la experiencia?
             </h2>
           </div>
           <div className="text-lg leading-8 text-carbon/72">
@@ -58,9 +71,36 @@ export function ActivityDetail({ activity }: { activity: Activity }) {
             <p className="mt-6 text-base leading-7 text-carbon/65">
               Antes de reservar se confirma fecha, punto de encuentro, cupo disponible y equipo necesario para llegar preparado.
             </p>
+            {activity.googleMapsUrl ? (
+              <a
+                href={activity.googleMapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="focus-ring mt-6 inline-flex rounded-full border border-carbon/15 px-5 py-3 text-sm font-black uppercase tracking-wide text-pine transition hover:border-pine"
+              >
+                Ver ubicación en Google Maps
+              </a>
+            ) : null}
           </div>
         </div>
       </section>
+
+      {images.length > 1 ? (
+        <section className="bg-fog py-14">
+          <div className="section-shell grid gap-4 md:grid-cols-3">
+            {images.map((image, index) => (
+              <div key={`${image}-${index}`} className="aspect-[4/3] overflow-hidden rounded-sm bg-carbon shadow-sm">
+                <img
+                  src={image}
+                  alt={activity.imageAlt}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="bg-carbon py-20 text-fog">
         <div className="section-shell grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -75,7 +115,7 @@ export function ActivityDetail({ activity }: { activity: Activity }) {
               <div>
                 <p className="eyebrow">Ubicación del destino</p>
                 <p className="mt-3 max-w-md text-lg font-semibold">
-                  Esta salida termina en {activity.location}. En el mapa de destinos podes ver el punto final de referencia.
+                  Esta salida se realiza en {activity.location}. Al reservar se confirma el punto de encuentro exacto y la logística del grupo.
                 </p>
               </div>
             </div>
@@ -84,7 +124,7 @@ export function ActivityDetail({ activity }: { activity: Activity }) {
             <p className="eyebrow">La salida</p>
             <h2 className="mt-3 font-display text-4xl font-black uppercase">Puntos principales</h2>
             <ol className="mt-8 grid gap-4">
-              {activity.routePoints.map((point, index) => (
+              {routePoints.map((point, index) => (
                 <li key={point} className="flex gap-4">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-moss text-sm font-black text-carbon">
                     {index + 1}
@@ -99,7 +139,7 @@ export function ActivityDetail({ activity }: { activity: Activity }) {
 
       <section className="bg-fog py-20">
         <div className="section-shell grid gap-8 lg:grid-cols-2">
-            <ListBlock title="Qué incluye" items={activity.includes} />
+          <ListBlock title="Qué incluye" items={activity.includes} />
           <div className="grid gap-6">
             <ListBlock title="Equipo obligatorio" items={activity.requiredGear} />
             <ListBlock title="Equipo recomendado" items={activity.recommendedGear} />

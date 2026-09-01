@@ -1,20 +1,28 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import type { Activity } from "@/data/activities";
+import { LeafletDestinationMap } from "@/components/LeafletDestinationMap";
 
-const LeafletDestinationMap = dynamic(
-  () => import("@/components/LeafletDestinationMap").then((module) => module.LeafletDestinationMap),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="grid gap-6 lg:grid-cols-[1.45fr_0.55fr]">
-        <div className="h-[500px] rounded-sm bg-carbon" />
-        <div className="h-[500px] rounded-sm bg-white shadow-sm" />
-      </div>
-    )
+function MapSkeleton() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1.45fr_0.55fr]">
+      <div className="h-[500px] rounded-sm bg-carbon" />
+      <div className="h-[500px] rounded-sm bg-white shadow-sm" />
+    </div>
+  );
+}
+
+export function DestinationMap({ initialActivities = [] }: { initialActivities?: Activity[] }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <MapSkeleton />;
   }
-);
 
-export function DestinationMap() {
-  return <LeafletDestinationMap />;
+  return <LeafletDestinationMap initialActivities={initialActivities} />;
 }

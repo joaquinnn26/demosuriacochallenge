@@ -1,38 +1,53 @@
 ﻿"use client";
 
 import { useMemo, useState } from "react";
-import { activities, categoryLabels, type ActivityCategory, type ActivityDifficulty, type ActivityDuration } from "@/data/activities";
+import {
+  filterLabels,
+  type Activity,
+  type ActivityFilter
+} from "@/data/activities";
 import { ActivityGrid } from "./ActivityGrid";
 
-const categories: ActivityCategory[] = [
-  "trekking",
-  "astronomia",
-  "camping",
-  "montana",
-  "familia",
-  "viajes",
-  "grupos",
-  "especiales"
+const durationFilters: ActivityFilter[] = ["un-dia", "pernocta"];
+const placeFilters: ActivityFilter[] = [
+  "madrid-centro",
+  "espana",
+  "europa-africa",
+  "sudamerica",
+  "argentina"
 ];
-const durations: ActivityDuration[] = ["Medio día", "1 día", "Fin de semana", "Varios días"];
-const difficulties: ActivityDifficulty[] = ["Fácil", "Media", "Difícil"];
+const typeFilters: ActivityFilter[] = ["trekking", "invernales", "escalada", "astronomia-picos"];
 
-export function AdventureFinder({ compact = false }: { compact?: boolean }) {
-  const [category, setCategory] = useState<ActivityCategory | "todas">("todas");
-  const [duration, setDuration] = useState<ActivityDuration | "todas">("todas");
-  const [difficulty, setDifficulty] = useState<ActivityDifficulty | "todas">("todas");
+export function AdventureFinder({
+  compact = false,
+  initialActivities = []
+}: {
+  compact?: boolean;
+  initialActivities?: Activity[];
+}) {
+  const [duration, setDuration] = useState<ActivityFilter | "todas">("todas");
+  const [place, setPlace] = useState<ActivityFilter | "todas">("todas");
+  const [activityType, setActivityType] = useState<ActivityFilter | "todas">("todas");
 
   const filtered = useMemo(
     () =>
-      activities.filter((activity) => {
+      initialActivities.filter((activity) => {
         return (
-          (category === "todas" || activity.category === category) &&
-          (duration === "todas" || activity.duration === duration) &&
-          (difficulty === "todas" || activity.difficulty === difficulty)
+          (duration === "todas" || activity.filters.includes(duration)) &&
+          (place === "todas" || activity.filters.includes(place)) &&
+          (activityType === "todas" || activity.filters.includes(activityType))
         );
       }),
-    [category, difficulty, duration]
+    [activityType, duration, initialActivities, place]
   );
+
+  const hasActiveFilters = duration !== "todas" || place !== "todas" || activityType !== "todas";
+
+  const resetFilters = () => {
+    setDuration("todas");
+    setPlace("todas");
+    setActivityType("todas");
+  };
 
   return (
     <section className={compact ? "" : "bg-fog py-20"}>
@@ -41,43 +56,46 @@ export function AdventureFinder({ compact = false }: { compact?: boolean }) {
           <div>
             <p className="eyebrow">Buscador de salidas</p>
             <h2 className="mt-3 font-display text-4xl font-black uppercase leading-none md:text-6xl">
-              Qué tipo de salida estás buscando?
+              Próximas actividades
             </h2>
             <p className="mt-5 text-lg leading-8 text-carbon/68">
-              Filtrá las propuestas según tipo de actividad, duración y dificultad para encontrar una salida compatible con tu nivel.
+              Filtrá el mosaico por duración, destino o tipo de actividad según las categorías de selección de Suriaco Challenge.
             </p>
           </div>
-          <div className="rounded-sm bg-white p-5 shadow-sm md:p-7">
-            <FilterGroup label="Tipo de aventura">
-              <FilterButton active={category === "todas"} onClick={() => setCategory("todas")}>
-                Todas
-              </FilterButton>
-              {categories.map((item) => (
-                <FilterButton key={item} active={category === item} onClick={() => setCategory(item)}>
-                  {categoryLabels[item]}
-                </FilterButton>
-              ))}
-            </FilterGroup>
-            <FilterGroup label="Cuanto tiempo tenes?">
-              <FilterButton active={duration === "todas"} onClick={() => setDuration("todas")}>
-                Cualquiera
-              </FilterButton>
-              {durations.map((item) => (
-                <FilterButton key={item} active={duration === item} onClick={() => setDuration(item)}>
-                  {item}
-                </FilterButton>
-              ))}
-            </FilterGroup>
-            <FilterGroup label="Que dificultad buscas?">
-              <FilterButton active={difficulty === "todas"} onClick={() => setDifficulty("todas")}>
-                Cualquiera
-              </FilterButton>
-              {difficulties.map((item) => (
-                <FilterButton key={item} active={difficulty === item} onClick={() => setDifficulty(item)}>
-                  {item}
-                </FilterButton>
-              ))}
-            </FilterGroup>
+          <div className="rounded-sm border border-carbon/10 bg-white p-4 shadow-sm md:p-5">
+            <div className="grid items-end gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.25fr)_minmax(0,1fr)_auto]">
+              <FilterSelect
+                label="Duración"
+                value={duration}
+                options={durationFilters}
+                onChange={setDuration}
+              />
+              <FilterSelect
+                label="Lugares"
+                value={place}
+                options={placeFilters}
+                onChange={setPlace}
+              />
+              <FilterSelect
+                label="Tipo"
+                value={activityType}
+                options={typeFilters}
+                onChange={setActivityType}
+              />
+              <button
+                type="button"
+                onClick={resetFilters}
+                disabled={!hasActiveFilters}
+                className="focus-ring h-12 rounded-sm border border-carbon/15 px-5 text-xs font-black uppercase tracking-wide text-carbon transition hover:border-pine disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Limpiar
+              </button>
+            </div>
+            <div className="mt-4 border-t border-carbon/10 pt-4">
+              <p className="text-sm font-bold text-carbon/60">
+                {filtered.length} actividad{filtered.length === 1 ? "" : "es"} encontrada{filtered.length === 1 ? "" : "s"}
+              </p>
+            </div>
           </div>
         </div>
         <div className="mt-10">
@@ -85,8 +103,8 @@ export function AdventureFinder({ compact = false }: { compact?: boolean }) {
             <ActivityGrid activities={filtered} />
           ) : (
             <div className="rounded-sm border border-carbon/10 bg-white p-8 text-center">
-              <p className="font-bold">No hay experiencias compatibles con esa combinacion.</p>
-              <p className="mt-2 text-carbon/60">Proba ampliar los filtros o consultar por una salida a medida.</p>
+              <p className="font-bold">No hay actividades cargadas para esa combinación.</p>
+              <p className="mt-2 text-carbon/60">Probá ampliar los filtros o consultar por una salida a medida.</p>
             </div>
           )}
         </div>
@@ -95,36 +113,33 @@ export function AdventureFinder({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <fieldset className="border-b border-carbon/10 py-5 first:pt-0 last:border-0 last:pb-0">
-      <legend className="mb-3 text-xs font-black uppercase tracking-wide text-carbon/55">{label}</legend>
-      <div className="flex flex-wrap gap-2">{children}</div>
-    </fieldset>
-  );
-}
-
-function FilterButton({
-  active,
-  onClick,
-  children
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange
 }: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
+  label: string;
+  value: ActivityFilter | "todas";
+  options: ActivityFilter[];
+  onChange: (value: ActivityFilter | "todas") => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`focus-ring rounded-full border px-4 py-2 text-sm font-bold transition ${
-        active
-          ? "border-pine bg-pine text-fog"
-          : "border-carbon/15 bg-fog text-carbon hover:border-pine"
-      }`}
-    >
-      {children}
-    </button>
+    <label className="grid min-w-0 gap-2">
+      <span className="text-xs font-black uppercase tracking-wide text-carbon/55">{label}</span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value as ActivityFilter | "todas")}
+        className="focus-ring h-12 w-full min-w-0 rounded-sm border border-carbon/15 bg-fog px-4 text-sm font-bold text-carbon"
+      >
+        <option value="todas">Todas</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {filterLabels[option]}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 
