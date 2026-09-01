@@ -338,7 +338,3 @@ export const activities: Activity[] = [
     recommendedGear: ["Gafas de sol", "Gorro", "Protección solar", "Snack"]
   }
 ];
-
-export function getActivityBySlug(slug: string) {
-  return activities.find((activity) => activity.slug === slug);
-}
