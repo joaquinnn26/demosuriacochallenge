@@ -29,6 +29,8 @@ import {
   markAdminSessionStarted
 } from "@/lib/adminSecurity";
 import { createSupabaseBrowserClient, hasSupabaseBrowserEnv } from "@/lib/supabase";
+import { ActivityModal } from "./ActivityModal";
+import { alerts, notifyError as setError, notifySuccess as setMessage, notifyInfo as setMapMessage } from "@/lib/alerts";
 import { AdminLogin } from "./AdminLogin";
 
 type ActivityStatus = NonNullable<Activity["status"]>;
@@ -247,11 +249,27 @@ export function AdminActivitiesPanel() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [mapMessage, setMapMessage] = useState<string | null>(null);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
+  const filteredActivities = useMemo(() => {
+    const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const query = normalize(search.trim());
+    return activities.filter((activity) =>
+      (statusFilter === "all" || (activity.status ?? "published") === statusFilter) &&
+      normalize(`${activity.name} ${activity.location} ${activity.summary} ${activity.description}`).includes(query)
+    );
+  }, [activities, search, statusFilter]);
+  const pageCount = Math.max(1, Math.ceil(filteredActivities.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const visibleActivities = filteredActivities.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  useEffect(() => { setPage((value) => Math.min(value, pageCount)); }, [pageCount]);
 
   const logout = async () => {
+    setModalOpen(false);
     if (!hasSupabaseBrowserEnv()) return;
     const supabase = createSupabaseBrowserClient();
     await fetch("/api/admin/session", { method: "DELETE" }).catch(() => null);
@@ -611,6 +629,7 @@ export function AdminActivitiesPanel() {
     setDraft(createEmptyActivity());
     setEditingSlug(null);
     setMapMessage(null);
+    setModalOpen(false);
   };
 
   const editActivity = (activity: Activity) => {
@@ -619,7 +638,7 @@ export function AdminActivitiesPanel() {
     setMessage(null);
     setError(null);
     setMapMessage(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setModalOpen(true);
   };
 
   const duplicateActivity = async (activity: Activity) => {
@@ -644,8 +663,17 @@ export function AdminActivitiesPanel() {
   };
 
   const deleteActivity = async (activity: Activity) => {
-    const confirmed = window.confirm(`Eliminar definitivamente "${activity.name}"?`);
-    if (!confirmed) return;
+    const confirmed = await alerts.fire({
+      title: "¿Eliminar actividad?",
+      text: `Se eliminará definitivamente "${activity.name}" y dejará de aparecer en el mapa público.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#c36a3d",
+      focusCancel: true
+    });
+    if (!confirmed.isConfirmed) return;
 
     const deleted = await persistActivities(
       activities.filter((item) => item.slug !== activity.slug),
@@ -710,7 +738,8 @@ export function AdminActivitiesPanel() {
         <StatCard label="Archivadas" value={stats.archived} />
       </section>
 
-      <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.75fr)]">
+      <section className="grid gap-8">
+        <ActivityModal open={modalOpen} busy={saving} onClose={() => setModalOpen(false)}>
         <form
           className="grid gap-5 rounded-sm bg-white p-5 shadow-sm md:p-6"
           onSubmit={(event) => {
@@ -721,7 +750,7 @@ export function AdminActivitiesPanel() {
           <div className="flex flex-col gap-3 border-b border-carbon/10 pb-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="eyebrow">Actividad</p>
-              <h2 className="mt-2 font-display text-3xl font-black uppercase">
+              <h2 id="activity-modal-title" className="mt-2 font-display text-3xl font-black uppercase">
                 {editingSlug ? "Editar actividad" : "Nueva actividad"}
               </h2>
             </div>
@@ -790,8 +819,7 @@ export function AdminActivitiesPanel() {
                 onChange={(value) => updateDraft({ longitude: parseNumber(value) })}
               />
             </div>
-            {mapMessage ? <p className="rounded-sm bg-fog p-3 text-sm font-bold text-carbon/70">{mapMessage}</p> : null}
-          </FormSection>
+            </FormSection>
 
           <FormSection title="Clasificación" description="Estos controles alimentan los filtros del home y del buscador.">
             <div className="grid gap-4 md:grid-cols-2">
@@ -936,8 +964,6 @@ export function AdminActivitiesPanel() {
             </div>
           </FormSection>
 
-          {message ? <p className="rounded-sm bg-moss/20 p-3 text-sm font-bold text-carbon">{message}</p> : null}
-          {error ? <p className="rounded-sm bg-ember/15 p-3 text-sm font-bold text-carbon">{error}</p> : null}
 
           <button
             type="submit"
@@ -947,11 +973,23 @@ export function AdminActivitiesPanel() {
             {saving ? "Guardando..." : editingSlug ? "Guardar cambios" : "Crear actividad"}
           </button>
         </form>
+        </ActivityModal>
 
         <section className="rounded-sm bg-white p-6 shadow-sm">
           <div className="border-b border-carbon/10 pb-5">
             <p className="eyebrow">Agenda</p>
-            <h2 className="mt-2 font-display text-3xl font-black uppercase">Actividades cargadas</h2>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h2 className="mt-2 font-display text-3xl font-black uppercase">Actividades cargadas</h2>
+              <button type="button" disabled={saving || loading} onClick={() => {
+                setDraft(createEmptyActivity()); setEditingSlug(null); setModalOpen(true);
+              }} className="focus-ring rounded-full bg-pine px-6 py-3 text-sm font-black text-fog disabled:opacity-60">+ Añadir actividad</button>
+            </div>
+            <div className="mt-5 grid gap-4 md:grid-cols-[1fr_240px]">
+              <label className="grid gap-2 text-sm font-bold">Buscar actividades
+                <input type="search" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Título, lugar o descripción…" className="focus-ring min-w-0 rounded-sm border border-carbon/15 bg-fog px-4 py-3" />
+              </label>
+              <SelectField label="Estado" value={statusFilter} onChange={(value) => { setStatusFilter(value); setPage(1); }} options={[{ value: "all", label: "Todos los estados" }, ...statusOptions.map((value) => ({ value, label: statusLabels[value] }))]} />
+            </div>
           </div>
 
           {loading ? (
@@ -973,7 +1011,8 @@ export function AdminActivitiesPanel() {
             </div>
           ) : (
             <div className="mt-6 grid gap-4">
-              {activities.map((activity) => (
+              {filteredActivities.length === 0 && <p className="rounded-sm bg-fog p-5 text-carbon/65">No hay actividades que coincidan con la búsqueda y el estado seleccionados.</p>}
+              {visibleActivities.map((activity) => (
                 <article key={activity.slug} className="rounded-sm border border-carbon/10 p-4">
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
@@ -1000,20 +1039,21 @@ export function AdminActivitiesPanel() {
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2 md:justify-end">
-                      <button type="button" onClick={() => editActivity(activity)} className="admin-action-button">
+                      <button type="button" disabled={saving} onClick={() => editActivity(activity)} className="admin-action-button">
                         Editar
                       </button>
-                      <button type="button" onClick={() => duplicateActivity(activity)} className="admin-action-button">
+                      <button type="button" disabled={saving} onClick={() => duplicateActivity(activity)} className="admin-action-button">
                         Duplicar
                       </button>
                       <button
                         type="button"
+                        disabled={saving}
                         onClick={() => changeStatus(activity, activity.status === "published" || !activity.status ? "archived" : "published")}
                         className="admin-action-button"
                       >
                         {activity.status === "published" || !activity.status ? "Archivar" : "Publicar"}
                       </button>
-                      <button type="button" onClick={() => deleteActivity(activity)} className="admin-action-button text-ember">
+                      <button type="button" disabled={saving} onClick={() => deleteActivity(activity)} className="admin-action-button text-ember">
                         Eliminar
                       </button>
                     </div>
@@ -1021,6 +1061,16 @@ export function AdminActivitiesPanel() {
                 </article>
               ))}
             </div>
+          )}
+          {!loading && filteredActivities.length > 0 && (
+            <nav aria-label="Paginación de actividades" className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-carbon/10 pt-5">
+              <p aria-live="polite" className="text-sm text-carbon/65">{(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, filteredActivities.length)} de {filteredActivities.length} actividades</p>
+              <div className="flex items-center gap-3">
+                <button type="button" className="admin-action-button disabled:opacity-40" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>Anterior</button>
+                <span className="text-sm">Página {currentPage} de {pageCount}</span>
+                <button type="button" className="admin-action-button disabled:opacity-40" disabled={currentPage === pageCount} onClick={() => setPage(currentPage + 1)}>Siguiente</button>
+              </div>
+            </nav>
           )}
         </section>
       </section>

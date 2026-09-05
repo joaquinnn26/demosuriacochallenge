@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { notifyError as setError } from "@/lib/alerts";
 import {
   adminLoginAttemptsKey,
   adminLoginLockMs,
@@ -20,7 +21,6 @@ export function AdminLogin({ onLogin }: { onLogin: (accessToken: string) => void
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [lockTick, setLockTick] = useState(0);
 
   const lockedUntil = useMemo(() => {
@@ -124,7 +124,6 @@ export function AdminLogin({ onLogin }: { onLogin: (accessToken: string) => void
             Panel bloqueado temporalmente. Probá de nuevo en {formatDuration(lockedMs)}.
           </p>
         ) : null}
-        {error ? <p className="rounded-sm bg-ember/15 p-3 text-sm font-bold">{error}</p> : null}
         <button
           type="button"
           onClick={login}
