@@ -23,8 +23,21 @@ export function Footer() {
         </div>
         <div>
           <p className="text-xs font-black uppercase tracking-wider text-moss">Contacto</p>
-          <p className="mt-4 text-sm text-fog/75">WhatsApp: consultar desde el formulario</p>
-          <p className="mt-2 text-sm text-fog/75">Email: disponible a pedido</p>
+          <p className="mt-4 text-sm text-fog/75">
+            <a href={`https://wa.me/${siteConfig.whatsappNumber}`} className="focus-ring hover:text-fog">
+              WhatsApp: +34 644 138 997
+            </a>
+          </p>
+          <p className="mt-2 text-sm text-fog/75">
+            <a href={`mailto:${siteConfig.email}`} className="focus-ring break-all hover:text-fog">
+              Email: {siteConfig.email}
+            </a>
+          </p>
+          <p className="mt-2 text-sm text-fog/75">
+            <a href={siteConfig.instagramUrl} target="_blank" rel="noopener noreferrer" className="focus-ring hover:text-fog">
+              Instagram: @suriacochallenge
+            </a>
+          </p>
           <p className="mt-6 text-xs uppercase tracking-wide text-fog/45">
             Fechas, cupos y valores se confirman antes de reservar.
           </p>

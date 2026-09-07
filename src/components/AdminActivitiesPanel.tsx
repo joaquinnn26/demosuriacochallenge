@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import {
   activities as seedActivities,
   filterLabels,
@@ -19,11 +19,8 @@ import {
   slugifyActivityName
 } from "@/lib/activityUtils";
 import {
-  adminIdleTimeoutMs,
-  adminSessionDurationMs,
   adminSessionStartedKey,
   clearAdminSessionTracking,
-  formatDuration,
   getAdminSessionExpiredReason,
   markAdminActivity,
   markAdminSessionStarted
@@ -240,6 +237,8 @@ function normalizeActivity(activity: Activity, existingSlugs: string[]) {
 }
 
 export function AdminActivitiesPanel() {
+  const sessionVersion = useRef(0);
+  const signingOut = useRef(false);
   const todayIso = useMemo(getTodayIso, []);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [draft, setDraft] = useState<Activity>(() => createEmptyActivity());
@@ -269,6 +268,9 @@ export function AdminActivitiesPanel() {
   useEffect(() => { setPage((value) => Math.min(value, pageCount)); }, [pageCount]);
 
   const logout = async () => {
+    if (signingOut.current) return;
+    signingOut.current = true;
+    sessionVersion.current += 1;
     setModalOpen(false);
     if (!hasSupabaseBrowserEnv()) return;
     const supabase = createSupabaseBrowserClient();
@@ -296,6 +298,8 @@ export function AdminActivitiesPanel() {
   };
 
   const loadActivities = (token = accessToken) => {
+    if (signingOut.current) return;
+    const version = sessionVersion.current;
     setLoading(true);
     fetch("/api/activities?scope=admin", {
       cache: "no-store",
@@ -303,20 +307,24 @@ export function AdminActivitiesPanel() {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
       .then((response) => {
+        if (version !== sessionVersion.current) return null;
         if (response.status === 401 || response.status === 403) {
           void logout();
+          return null;
         }
         if (!response.ok) throw new Error("No se pudieron cargar las actividades.");
         return response.json();
       })
       .then((data) => {
+        if (!data || version !== sessionVersion.current) return;
         setActivities(Array.isArray(data.activities) ? data.activities : []);
       })
       .catch((loadError: Error) => {
+        if (version !== sessionVersion.current) return;
         setError(loadError.message);
       })
       .finally(() => {
-        setLoading(false);
+        if (version === sessionVersion.current) setLoading(false);
       });
   };
 
@@ -329,10 +337,13 @@ export function AdminActivitiesPanel() {
     const supabase = createSupabaseBrowserClient();
 
     supabase.auth.getSession().then(async ({ data }) => {
+      if (signingOut.current) return;
+      const version = sessionVersion.current;
       const session = data.session;
       try {
         if (session) {
           await establishAdminSession(session.access_token);
+          if (version !== sessionVersion.current) return;
           setAccessToken(session.access_token);
           setAuthenticated(true);
           loadActivities(session.access_token);
@@ -342,6 +353,7 @@ export function AdminActivitiesPanel() {
           setLoading(false);
         }
       } catch (sessionError) {
+        if (version !== sessionVersion.current) return;
         setError(sessionError instanceof Error ? sessionError.message : "No se pudo abrir la sesión de administración.");
         void logout();
         setLoading(false);
@@ -352,19 +364,25 @@ export function AdminActivitiesPanel() {
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
+        sessionVersion.current += 1;
         setAccessToken(null);
         setAuthenticated(false);
         setActivities([]);
         return;
       }
 
+      if (signingOut.current) return;
+      const version = sessionVersion.current;
+
       establishAdminSession(session.access_token)
         .then(() => {
+          if (version !== sessionVersion.current) return;
           setAccessToken(session.access_token);
           setAuthenticated(true);
           loadActivities(session.access_token);
         })
         .catch((sessionError) => {
+          if (version !== sessionVersion.current) return;
           setError(sessionError instanceof Error ? sessionError.message : "No se pudo abrir la sesión de administración.");
           void logout();
         });
@@ -702,6 +720,8 @@ export function AdminActivitiesPanel() {
     return (
       <AdminLogin
         onLogin={(token) => {
+          signingOut.current = false;
+          sessionVersion.current += 1;
           setAccessToken(token);
           setAuthenticated(true);
           loadActivities(token);
@@ -711,12 +731,9 @@ export function AdminActivitiesPanel() {
   }
 
   return (
-    <div className="grid gap-8">
+    <div className="grid gap-5">
       {hasSupabaseBrowserEnv() ? (
-        <div className="flex flex-col gap-3 rounded-sm bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
-          <p className="text-sm font-bold text-carbon/65">
-            Sesión protegida: token activo por {formatDuration(adminSessionDurationMs)} y cierre por inactividad a los {formatDuration(adminIdleTimeoutMs)}.
-          </p>
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={logout}
@@ -731,7 +748,7 @@ export function AdminActivitiesPanel() {
         </p>
       )}
 
-      <section className="grid gap-4 md:grid-cols-4">
+      <section aria-label="Resumen de actividades" className="grid grid-cols-2 gap-x-5 gap-y-2 rounded-sm bg-white px-4 py-3 shadow-sm sm:grid-cols-4">
         <StatCard label="Total" value={stats.total} />
         <StatCard label="Publicadas" value={stats.published} />
         <StatCard label="Borradores" value={stats.draft} />
@@ -1080,9 +1097,9 @@ export function AdminActivitiesPanel() {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-sm bg-white p-5 shadow-sm">
-      <p className="text-xs font-black uppercase tracking-wide text-carbon/45">{label}</p>
-      <strong className="mt-2 block font-display text-4xl font-black text-pine">{value}</strong>
+    <div className="flex items-center justify-between gap-2">
+      <p className="text-xs font-bold text-carbon/65">{label}</p>
+      <strong className="font-display text-xl font-black tabular-nums text-pine">{value}</strong>
     </div>
   );
 }

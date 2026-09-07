@@ -1,3 +1,4 @@
+import { siteConfig } from "@/data/site";
 import { ButtonLink } from "./ButtonLink";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 
@@ -24,7 +25,7 @@ export function Hero() {
             Salidas de 1 día, viajes con pernocta, nieve, escalada y astronomía con guías profesionales.
           </p>
           <div className="mt-9 flex justify-center">
-            <ButtonLink href="/contacto" variant="whatsapp">
+            <ButtonLink href={`https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(siteConfig.whatsappMessage)}`} variant="whatsapp">
               <WhatsAppIcon />
               <span>Consultar por WhatsApp</span>
             </ButtonLink>

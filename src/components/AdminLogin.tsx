@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { notifyError as setError } from "@/lib/alerts";
 import {
   adminLoginAttemptsKey,
@@ -30,6 +30,12 @@ export function AdminLogin({ onLogin }: { onLogin: (accessToken: string) => void
   const lockedMs = Math.max(0, lockedUntil - Date.now());
   const isLocked = lockedMs > 0;
 
+  useEffect(() => {
+    if (!isLocked) return;
+    const timer = window.setInterval(() => setLockTick((value) => value + 1), 1000);
+    return () => window.clearInterval(timer);
+  }, [isLocked]);
+
   const registerFailedAttempt = () => {
     const attempts = Number(window.localStorage.getItem(adminLoginAttemptsKey) ?? 0) + 1;
     window.localStorage.setItem(adminLoginAttemptsKey, attempts.toString());
@@ -48,6 +54,7 @@ export function AdminLogin({ onLogin }: { onLogin: (accessToken: string) => void
   };
 
   const login = async () => {
+    if (loading) return;
     if (isLocked) {
       setError(`Demasiados intentos fallidos. Probá de nuevo en ${formatDuration(lockedMs)}.`);
       return;
@@ -98,11 +105,16 @@ export function AdminLogin({ onLogin }: { onLogin: (accessToken: string) => void
     <div className="mx-auto max-w-md rounded-sm bg-white p-7 shadow-sm">
       <p className="eyebrow">Acceso privado</p>
       <h2 className="mt-3 font-display text-3xl font-black uppercase">Ingresar al panel</h2>
-      <div className="mt-6 grid gap-4">
+      <form className="mt-6 grid gap-4" onSubmit={(event) => {
+        event.preventDefault();
+        void login();
+      }}>
         <label className="grid gap-2">
           <span className="text-sm font-bold">Email</span>
           <input
             type="email"
+            name="email"
+            required
             value={email}
             autoComplete="email"
             onChange={(event) => setEmail(event.target.value.replace(/\\+@/g, "@"))}
@@ -113,6 +125,8 @@ export function AdminLogin({ onLogin }: { onLogin: (accessToken: string) => void
           <span className="text-sm font-bold">Contraseña</span>
           <input
             type="password"
+            name="password"
+            required
             value={password}
             autoComplete="current-password"
             onChange={(event) => setPassword(event.target.value)}
@@ -125,14 +139,13 @@ export function AdminLogin({ onLogin }: { onLogin: (accessToken: string) => void
           </p>
         ) : null}
         <button
-          type="button"
-          onClick={login}
-          disabled={loading || !email || !password || isLocked}
-          className="focus-ring rounded-full bg-pine px-6 py-4 text-sm font-black uppercase tracking-wide text-fog transition hover:bg-carbon disabled:cursor-not-allowed disabled:opacity-60"
+          type="submit"
+          disabled={loading || isLocked}
+          className="focus-ring cursor-pointer rounded-full bg-pine px-6 py-4 text-sm font-black uppercase tracking-wide text-fog transition hover:bg-carbon disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Ingresando..." : "Ingresar"}
         </button>
-      </div>
+      </form>
     </div>
   );
 }
