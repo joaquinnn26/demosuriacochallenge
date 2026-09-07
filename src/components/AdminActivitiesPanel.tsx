@@ -758,7 +758,7 @@ export function AdminActivitiesPanel() {
       <section className="grid gap-8">
         <ActivityModal open={modalOpen} busy={saving} onClose={() => setModalOpen(false)}>
         <form
-          className="grid gap-5 rounded-sm bg-white p-5 shadow-sm md:p-6"
+          className="activity-editor grid min-w-0 grid-cols-1 gap-4 rounded-sm bg-white p-3 shadow-sm sm:gap-5 sm:p-5 md:p-6"
           onSubmit={(event) => {
             event.preventDefault();
             void saveDraft();

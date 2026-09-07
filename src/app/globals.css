@@ -86,6 +86,25 @@ a {
 }
 
 @layer components {
+  .activity-editor :where(div, section, fieldset, label, span) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .activity-editor :where(input:not([type="checkbox"]), select, textarea) {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .activity-editor textarea {
+    resize: vertical;
+  }
+
+  .activity-editor input[type="checkbox"] {
+    flex-shrink: 0;
+  }
+
   .admin-action-button {
     @apply focus-ring rounded-full border border-carbon/15 px-3 py-2 text-xs font-black uppercase tracking-wide transition hover:border-pine;
   }

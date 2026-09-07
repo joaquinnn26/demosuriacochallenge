@@ -50,7 +50,7 @@ export function ActivityModal({ open, busy, onClose, children }: {
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-carbon/70 p-3 backdrop-blur-sm sm:p-6" onClick={(event) => {
       if (event.target === event.currentTarget && !busy) onClose();
     }}>
-      <div ref={panel} role="dialog" aria-modal="true" aria-labelledby="activity-modal-title" tabIndex={-1} className="max-h-[90dvh] w-full max-w-4xl overflow-y-auto rounded-xl bg-white shadow-lift outline-none">
+      <div ref={panel} role="dialog" aria-modal="true" aria-labelledby="activity-modal-title" tabIndex={-1} className="min-w-0 max-h-[90dvh] w-full max-w-4xl overflow-y-auto rounded-xl bg-white shadow-lift outline-none">
         <div className="sticky top-0 z-10 flex justify-end border-b border-carbon/10 bg-white px-5 py-3">
           <button type="button" disabled={busy} onClick={onClose} className="admin-action-button disabled:opacity-40" aria-label="Cerrar formulario de actividad">Cerrar ✕</button>
         </div>
