@@ -27,10 +27,8 @@
     "price": "Consultar valor1",
     "nextDate": "31 de octubre de 2026",
     "nextDateIso": "2026-10-31",
-    "image": "/uploads/activities/2026-10-31-bf5dcba7-f569-42b6-bf91-28bdd98d9aa4.jpg",
-    "images": [
-      "/uploads/activities/2026-10-31-bf5dcba7-f569-42b6-bf91-28bdd98d9aa4.jpg"
-    ],
+    "image": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80",
+    "images": [],
     "imageAlt": "Imagen de prueba1",
     "summary": "aa",
     "description": "aa",
