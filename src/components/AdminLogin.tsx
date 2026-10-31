@@ -11,7 +11,6 @@ import {
   formatDuration,
   markAdminSessionStarted
 } from "@/lib/adminSecurity";
-import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 function normalizeEmail(value: string) {
   return value.trim().replace(/\\+@/g, "@").toLowerCase();
@@ -65,34 +64,24 @@ export function AdminLogin({ onLogin }: { onLogin: (accessToken: string) => void
 
     try {
       const normalizedEmail = normalizeEmail(email);
-      const supabase = createSupabaseBrowserClient();
       await fetch("/api/admin/session", { method: "DELETE", credentials: "same-origin" }).catch(() => null);
       clearAdminSessionTracking();
-
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: normalizedEmail,
-        password
-      });
-
-      if (error || !data.session) throw new Error(error?.message ?? "No se pudo iniciar sesión.");
 
       const response = await fetch("/api/admin/session", {
         method: "POST",
         credentials: "same-origin",
-        headers: {
-          Authorization: `Bearer ${data.session.access_token}`
-        }
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalizedEmail, password })
       });
 
       if (!response.ok) {
-        await supabase.auth.signOut();
         const payload = await response.json().catch(() => null);
-        throw new Error(payload?.error ?? "Usuario sin permisos de administración.");
+        throw new Error(payload?.error ?? "Email o contraseña incorrectos.");
       }
 
       clearFailedAttempts();
       markAdminSessionStarted();
-      onLogin(data.session.access_token);
+      onLogin("cookie-session");
     } catch (loginError) {
       registerFailedAttempt();
       setError(loginError instanceof Error ? loginError.message : "No se pudo iniciar sesión.");

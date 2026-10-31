@@ -1,96 +1,46 @@
-import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { validateAdminSessionCookie, validateSupabaseAdminUser } from "@/lib/adminAuth";
-import { createSupabaseAdminClient, hasSupabaseBrowserEnv, hasSupabaseServerEnv } from "@/lib/supabase";
+import { mkdir, writeFile } from "fs/promises";
+import path from "path";
+import { NextResponse } from "next/server";
+import { validateAdminSession } from "@/lib/adminAuth";
+import { getPublicGitHubUrl, hasGitHubStore, writeGitHubFile } from "@/lib/githubStore";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const bucketName = "activity-images";
 const maxImages = 3;
 const maxImageSize = 5 * 1024 * 1024;
 
-async function validateAdminRequest(request: Request) {
-  if (!hasSupabaseBrowserEnv() || !hasSupabaseServerEnv()) return null;
-
-  const auth = await validateSupabaseAdminUser(request);
-  if (auth.error) return auth.error;
-  if (!auth.user) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
-
-  return validateAdminSessionCookie(request, auth.user);
-}
-
 function getExtension(file: File) {
-  const fromName = file.name.split(".").pop()?.toLowerCase();
-  if (fromName && /^[a-z0-9]+$/.test(fromName)) return fromName;
-
-  const fromType = file.type.split("/").pop()?.toLowerCase();
-  return fromType && /^[a-z0-9]+$/.test(fromType) ? fromType : "jpg";
-}
-
-async function ensureBucket() {
-  const supabase = createSupabaseAdminClient();
-  const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-
-  if (listError) throw new Error(listError.message);
-  if (buckets?.some((bucket) => bucket.name === bucketName)) return supabase;
-
-  const { error } = await supabase.storage.createBucket(bucketName, {
-    public: true,
-    fileSizeLimit: maxImageSize,
-    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"]
-  });
-
-  if (error) throw new Error(error.message);
-  return supabase;
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  return extension && /^(jpe?g|png|webp|gif)$/.test(extension) ? extension : "jpg";
 }
 
 export async function POST(request: Request) {
   try {
-    if (!hasSupabaseServerEnv()) {
-      return NextResponse.json({ error: "Supabase Storage no está configurado." }, { status: 503 });
-    }
-
-    const authError = await validateAdminRequest(request);
+    const authError = validateAdminSession(request);
     if (authError) return authError;
-
+    if (!hasGitHubStore()) return NextResponse.json({ error: "GitHub no está configurado." }, { status: 503 });
     const formData = await request.formData();
     const files = formData.getAll("images").filter((value): value is File => value instanceof File);
+    if (!files.length) return NextResponse.json({ error: "No se recibieron imágenes." }, { status: 400 });
+    if (files.length > maxImages) return NextResponse.json({ error: "Máximo 3 imágenes por actividad." }, { status: 400 });
+    if (files.some((file) => !file.type.startsWith("image/") || file.size > maxImageSize)) return NextResponse.json({ error: "Cada archivo debe ser una imagen de hasta 5 MB." }, { status: 400 });
 
-    if (!files.length) {
-      return NextResponse.json({ error: "No se recibieron imágenes." }, { status: 400 });
-    }
-
-    if (files.length > maxImages) {
-      return NextResponse.json({ error: "Máximo 3 imágenes por actividad." }, { status: 400 });
-    }
-
-    const invalidFile = files.find((file) => !file.type.startsWith("image/") || file.size > maxImageSize);
-    if (invalidFile) {
-      return NextResponse.json({ error: "Cada archivo debe ser una imagen de hasta 5 MB." }, { status: 400 });
-    }
-
-    const supabase = await ensureBucket();
     const images: string[] = [];
-
     for (const file of files) {
-      const extension = getExtension(file);
-      const filePath = `${new Date().toISOString().slice(0, 10)}/${randomUUID()}.${extension}`;
+      const filePath = `public/uploads/activities/${new Date().toISOString().slice(0, 10)}-${randomUUID()}.${getExtension(file)}`;
       const buffer = Buffer.from(await file.arrayBuffer());
-
-      const { error } = await supabase.storage.from(bucketName).upload(filePath, buffer, {
-        contentType: file.type,
-        upsert: false
-      });
-
-      if (error) throw new Error(error.message);
-
-      const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-      images.push(data.publicUrl);
+      await writeGitHubFile(filePath, buffer, `Subir imagen ${file.name}`);
+      if (process.env.NODE_ENV !== "production") {
+        const localPath = path.join(process.cwd(), filePath);
+        await mkdir(path.dirname(localPath), { recursive: true });
+        await writeFile(localPath, buffer);
+      }
+      images.push(getPublicGitHubUrl(filePath));
     }
-
     return NextResponse.json({ images });
   } catch (error) {
-    return NextResponse.json({ error: "No se pudieron subir las imágenes." }, { status: 500 });
+    const message = error instanceof Error ? error.message : "No se pudieron subir las imágenes.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

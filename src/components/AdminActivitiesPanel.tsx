@@ -25,7 +25,6 @@ import {
   markAdminActivity,
   markAdminSessionStarted
 } from "@/lib/adminSecurity";
-import { createSupabaseBrowserClient, hasSupabaseBrowserEnv } from "@/lib/supabase";
 import { ActivityModal } from "./ActivityModal";
 import { alerts, notifyError as setError, notifySuccess as setMessage, notifyInfo as setMapMessage } from "@/lib/alerts";
 import { AdminLogin } from "./AdminLogin";
@@ -243,11 +242,12 @@ export function AdminActivitiesPanel() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [draft, setDraft] = useState<Activity>(() => createEmptyActivity());
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
-  const [authenticated, setAuthenticated] = useState(!hasSupabaseBrowserEnv());
-  const [authLoading, setAuthLoading] = useState(hasSupabaseBrowserEnv());
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -272,29 +272,11 @@ export function AdminActivitiesPanel() {
     signingOut.current = true;
     sessionVersion.current += 1;
     setModalOpen(false);
-    if (!hasSupabaseBrowserEnv()) return;
-    const supabase = createSupabaseBrowserClient();
     await fetch("/api/admin/session", { method: "DELETE" }).catch(() => null);
-    await supabase.auth.signOut();
     clearAdminSessionTracking();
     setAuthenticated(false);
     setAccessToken(null);
     setActivities([]);
-  };
-
-  const establishAdminSession = async (token: string) => {
-    const response = await fetch("/api/admin/session", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      credentials: "same-origin"
-    });
-
-    if (!response.ok) {
-      const payload = await response.json().catch(() => null);
-      throw new Error(payload?.error ?? "No se pudo abrir la sesión de administración.");
-    }
-
-    markAdminSessionStarted();
   };
 
   const loadActivities = (token = accessToken) => {
@@ -304,7 +286,7 @@ export function AdminActivitiesPanel() {
     fetch("/api/activities?scope=admin", {
       cache: "no-store",
       credentials: "same-origin",
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
+      headers: {}
     })
       .then((response) => {
         if (version !== sessionVersion.current) return null;
@@ -329,72 +311,21 @@ export function AdminActivitiesPanel() {
   };
 
   useEffect(() => {
-    if (!hasSupabaseBrowserEnv()) {
-      loadActivities();
-      return;
-    }
-
-    const supabase = createSupabaseBrowserClient();
-
-    supabase.auth.getSession().then(async ({ data }) => {
-      if (signingOut.current) return;
-      const version = sessionVersion.current;
-      const session = data.session;
-      try {
-        if (session) {
-          await establishAdminSession(session.access_token);
-          if (version !== sessionVersion.current) return;
-          setAccessToken(session.access_token);
-          setAuthenticated(true);
-          loadActivities(session.access_token);
-        } else {
-          setAccessToken(null);
-          setAuthenticated(false);
-          setLoading(false);
-        }
-      } catch (sessionError) {
-        if (version !== sessionVersion.current) return;
-        setError(sessionError instanceof Error ? sessionError.message : "No se pudo abrir la sesión de administración.");
-        void logout();
-        setLoading(false);
-      } finally {
-        setAuthLoading(false);
-      }
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        sessionVersion.current += 1;
-        setAccessToken(null);
+    fetch("/api/admin/session", { credentials: "same-origin", cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error("Sesión no iniciada.");
+        setAuthenticated(true);
+        loadActivities("cookie-session");
+      })
+      .catch(() => {
         setAuthenticated(false);
-        setActivities([]);
-        return;
-      }
-
-      if (signingOut.current) return;
-      const version = sessionVersion.current;
-
-      establishAdminSession(session.access_token)
-        .then(() => {
-          if (version !== sessionVersion.current) return;
-          setAccessToken(session.access_token);
-          setAuthenticated(true);
-          loadActivities(session.access_token);
-        })
-        .catch((sessionError) => {
-          if (version !== sessionVersion.current) return;
-          setError(sessionError instanceof Error ? sessionError.message : "No se pudo abrir la sesión de administración.");
-          void logout();
-        });
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+        setLoading(false);
+      })
+      .finally(() => setAuthLoading(false));
   }, []);
 
   useEffect(() => {
-    if (!authenticated || !hasSupabaseBrowserEnv()) return;
+    if (!authenticated) return;
 
     if (!window.localStorage.getItem(adminSessionStartedKey)) {
       markAdminSessionStarted();
@@ -514,17 +445,18 @@ export function AdminActivitiesPanel() {
       return;
     }
 
+    setUploadingImages(true);
+    setError(null);
     try {
       let images: string[];
 
-      if (hasSupabaseBrowserEnv() && accessToken) {
+      if (authenticated) {
         const formData = new FormData();
         imageFiles.forEach((file) => formData.append("images", file));
 
         const response = await fetch("/api/admin/images", {
           method: "POST",
           credentials: "same-origin",
-          headers: { Authorization: `Bearer ${accessToken}` },
           body: formData
         });
 
@@ -546,6 +478,7 @@ export function AdminActivitiesPanel() {
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "No se pudieron cargar las imágenes.");
     } finally {
+      setUploadingImages(false);
       event.target.value = "";
     }
   };
@@ -578,29 +511,17 @@ export function AdminActivitiesPanel() {
     setMessage(null);
 
     try {
-      if (hasSupabaseBrowserEnv()) {
-        const expiredReason = getAdminSessionExpiredReason();
-        if (expiredReason) {
-          await logout();
-          throw new Error(expiredReason);
-        }
-      }
-
-      let token = accessToken;
-
-      if (hasSupabaseBrowserEnv()) {
-        const supabase = createSupabaseBrowserClient();
-        const { data } = await supabase.auth.getSession();
-        token = data.session?.access_token ?? null;
-        setAccessToken(token);
+      const expiredReason = getAdminSessionExpiredReason();
+      if (expiredReason) {
+        await logout();
+        throw new Error(expiredReason);
       }
 
       const response = await fetch("/api/activities", {
         method: "PUT",
         credentials: "same-origin",
         headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ activities: nextActivities })
       });
@@ -626,6 +547,10 @@ export function AdminActivitiesPanel() {
   };
 
   const saveDraft = async () => {
+    if (uploadingImages) {
+      setError("Esperá a que termine la carga de imágenes antes de guardar.");
+      return;
+    }
     const draftError = validateDraft();
     if (draftError) {
       setError(draftError);
@@ -732,23 +657,22 @@ export function AdminActivitiesPanel() {
 
   return (
     <div className="grid gap-5">
-      {hasSupabaseBrowserEnv() ? (
-        <div className="flex justify-end">
+      <div className="flex flex-col gap-4 rounded-xl bg-pine p-5 text-white shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-moss">Administración</p>
+          <h1 className="mt-1 font-display text-2xl font-black uppercase sm:text-3xl">Tu agenda de actividades</h1>
+          <p className="mt-1 text-sm text-white/70">Creá, publicá y actualizá las experiencias que ven tus clientes.</p>
+        </div>
           <button
             type="button"
             onClick={logout}
-            className="focus-ring rounded-full border border-carbon/15 px-4 py-2 text-xs font-black uppercase tracking-wide transition hover:border-pine"
+            className="focus-ring self-start rounded-full border border-white/25 px-4 py-2 text-xs font-black uppercase tracking-wide transition hover:border-white sm:self-auto"
           >
             Cerrar sesión
           </button>
-        </div>
-      ) : (
-        <p className="rounded-sm bg-white p-4 text-sm font-bold text-carbon/70 shadow-sm">
-          Modo demo local: configurá Supabase en `.env.local` para activar login y base de datos.
-        </p>
-      )}
+      </div>
 
-      <section aria-label="Resumen de actividades" className="grid grid-cols-2 gap-x-5 gap-y-2 rounded-sm bg-white px-4 py-3 shadow-sm sm:grid-cols-4">
+      <section aria-label="Resumen de actividades" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="Total" value={stats.total} />
         <StatCard label="Publicadas" value={stats.published} />
         <StatCard label="Borradores" value={stats.draft} />
@@ -756,7 +680,7 @@ export function AdminActivitiesPanel() {
       </section>
 
       <section className="grid gap-8">
-        <ActivityModal open={modalOpen} busy={saving} onClose={() => setModalOpen(false)}>
+        <ActivityModal open={modalOpen} busy={saving || uploadingImages} onClose={() => setModalOpen(false)}>
         <form
           className="activity-editor grid min-w-0 grid-cols-1 gap-4 rounded-sm bg-white p-3 shadow-sm sm:gap-5 sm:p-5 md:p-6"
           onSubmit={(event) => {
@@ -784,14 +708,14 @@ export function AdminActivitiesPanel() {
             </button>
           </div>
 
-          <FormSection title="Datos principales" description="Lo mínimo para que la actividad aparezca clara en tarjetas, buscador y detalle.">
+          <div className="flex gap-2 overflow-x-auto pb-1 text-xs font-black uppercase tracking-wide text-carbon/55">
+            {["1 · Esencial", "2 · Mapa", "3 · Clasificación", "4 · Detalles", "5 · Contenido"].map((label) => (
+              <span key={label} className="whitespace-nowrap rounded-full bg-fog px-3 py-2">{label}</span>
+            ))}
+          </div>
+
+          <FormSection step="1" title="Datos principales" description="Empezá por lo esencial: nombre, fecha, lugar y estado de publicación.">
             <TextField label="Título" value={draft.name} onChange={(value) => updateDraft({ name: value })} />
-            <TextField
-              label="Slug"
-              value={draft.slug}
-              onChange={(value) => updateDraft({ slug: slugifyActivityName(value) })}
-              placeholder="Se genera automático si queda vacío"
-            />
             <div className="grid gap-4 md:grid-cols-2">
               <DateField label="Fecha" value={draft.nextDateIso ?? ""} min={todayIso} onChange={setDate} />
               <TextField label="Lugar visible" value={draft.location} onChange={(value) => updateDraft({ location: value })} placeholder="Ej: Sierra de Guadarrama, Madrid" />
@@ -804,7 +728,7 @@ export function AdminActivitiesPanel() {
             </div>
           </FormSection>
 
-          <FormSection title="Ubicación para el mapa" description="Pegá un link de Google Maps con coordenadas o cargá latitud/longitud manualmente.">
+          <FormSection step="2" title="Ubicación para el mapa" description="Pegá el enlace de Google Maps; intentaremos completar las coordenadas por vos.">
             <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
               <TextField
                 label="Link de Google Maps"
@@ -838,7 +762,7 @@ export function AdminActivitiesPanel() {
             </div>
             </FormSection>
 
-          <FormSection title="Clasificación" description="Estos controles alimentan los filtros del home y del buscador.">
+          <FormSection step="3" title="Clasificación" description="Ayudá a que los clientes encuentren esta actividad usando los filtros.">
             <div className="grid gap-4 md:grid-cols-2">
               <SelectField
                 label="Tipo"
@@ -866,7 +790,7 @@ export function AdminActivitiesPanel() {
             </div>
           </FormSection>
 
-          <FormSection title="Medidas y cupos" description="Cargá solo números; la web agrega unidades automáticamente.">
+          <FormSection step="4" title="Detalles prácticos" description="Completá lo que el cliente necesita saber antes de consultar.">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <NumberField
                 label="Distancia"
@@ -919,18 +843,19 @@ export function AdminActivitiesPanel() {
             </div>
           </FormSection>
 
-          <FormSection title="Contenido público" description="Imágenes y texto principal que verá el visitante.">
+          <FormSection step="5" title="Contenido público" description="Sumá una buena portada y explicá claramente en qué consiste la experiencia.">
             <label className="grid gap-2">
               <span className="text-sm font-bold">Imágenes del evento</span>
               <input
                 type="file"
                 accept="image/*"
                 multiple
+                disabled={uploadingImages}
                 onChange={uploadImages}
                 className="focus-ring rounded-sm border border-carbon/15 bg-fog px-4 py-3 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-pine file:px-4 file:py-2 file:text-xs file:font-black file:uppercase file:tracking-wide file:text-white"
               />
               <span className="text-xs font-bold uppercase tracking-wide text-carbon/45">
-                Máximo 3 imágenes. La primera se usa como portada.
+                {uploadingImages ? "Subiendo imágenes, esperá un momento…" : "Máximo 3 imágenes. La primera se usa como portada."}
               </span>
             </label>
 
@@ -982,21 +907,25 @@ export function AdminActivitiesPanel() {
           </FormSection>
 
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="focus-ring rounded-full bg-pine px-6 py-4 text-sm font-black uppercase tracking-wide text-fog transition hover:bg-carbon disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {saving ? "Guardando..." : editingSlug ? "Guardar cambios" : "Crear actividad"}
-          </button>
+          <div className="sticky bottom-0 z-10 -mx-3 -mb-3 flex flex-col-reverse gap-3 border-t border-carbon/10 bg-white/95 p-4 backdrop-blur sm:-mx-5 sm:-mb-5 sm:flex-row sm:justify-end md:-mx-6 md:-mb-6">
+            <button type="button" disabled={saving || uploadingImages} onClick={() => setModalOpen(false)} className="focus-ring rounded-full border border-carbon/15 px-6 py-3 text-sm font-black uppercase tracking-wide disabled:opacity-50">
+              Cancelar
+            </button>
+            <button type="submit" disabled={saving || uploadingImages} className="focus-ring rounded-full bg-pine px-7 py-3 text-sm font-black uppercase tracking-wide text-fog transition hover:bg-carbon disabled:cursor-not-allowed disabled:opacity-60">
+              {uploadingImages ? "Subiendo imágenes..." : saving ? "Guardando..." : editingSlug ? "Guardar cambios" : "Crear actividad"}
+            </button>
+          </div>
         </form>
         </ActivityModal>
 
-        <section className="rounded-sm bg-white p-6 shadow-sm">
+        <section className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
           <div className="border-b border-carbon/10 pb-5">
             <p className="eyebrow">Agenda</p>
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <h2 className="mt-2 font-display text-3xl font-black uppercase">Actividades cargadas</h2>
+              <div>
+                <h2 className="mt-2 font-display text-3xl font-black uppercase">Actividades cargadas</h2>
+                <p className="mt-1 text-sm text-carbon/60">Buscá una actividad o usá los filtros para administrarla rápidamente.</p>
+              </div>
               <button type="button" disabled={saving || loading} onClick={() => {
                 setDraft(createEmptyActivity()); setEditingSlug(null); setModalOpen(true);
               }} className="focus-ring rounded-full bg-pine px-6 py-3 text-sm font-black text-fog disabled:opacity-60">+ Añadir actividad</button>
@@ -1013,7 +942,7 @@ export function AdminActivitiesPanel() {
             <p className="mt-6 text-carbon/60">Cargando actividades...</p>
           ) : activities.length === 0 ? (
             <div className="mt-6 rounded-sm border border-carbon/10 bg-fog p-5">
-              <p className="font-bold">Todavía no hay actividades en Supabase.</p>
+              <p className="font-bold">Todavía no hay actividades guardadas.</p>
               <p className="mt-2 text-sm text-carbon/65">
                 Podés crear la primera manualmente o importar la agenda inicial cargada en el proyecto.
               </p>
@@ -1030,14 +959,18 @@ export function AdminActivitiesPanel() {
             <div className="mt-6 grid gap-4">
               {filteredActivities.length === 0 && <p className="rounded-sm bg-fog p-5 text-carbon/65">No hay actividades que coincidan con la búsqueda y el estado seleccionados.</p>}
               {visibleActivities.map((activity) => (
-                <article key={activity.slug} className="rounded-sm border border-carbon/10 p-4">
-                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                    <div>
+                <article key={activity.slug} className="overflow-hidden rounded-xl border border-carbon/10 bg-white transition hover:border-pine/30 hover:shadow-sm">
+                  <div className="grid md:grid-cols-[140px_1fr]">
+                    <div className="aspect-[16/9] bg-carbon md:aspect-auto md:min-h-40">
+                      <img src={activity.image} alt={activity.imageAlt} className="h-full w-full object-cover" />
+                    </div>
+                    <div className="flex min-w-0 flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="min-w-0">
                       <p className="text-xs font-black uppercase tracking-wide text-carbon/45">
                         {formatActivityDate(activity) || "Sin fecha"} · {activity.location || "Sin lugar"}
                       </p>
-                      <h3 className="mt-2 font-display text-2xl font-black uppercase leading-tight">{activity.name}</h3>
-                      <p className="mt-2 text-sm text-carbon/65">{activity.summary || "Sin resumen cargado."}</p>
+                      <h3 className="mt-2 truncate font-display text-xl font-black uppercase leading-tight sm:text-2xl">{activity.name}</h3>
+                      <p className="mt-2 line-clamp-2 text-sm text-carbon/65">{activity.summary || "Sin resumen cargado."}</p>
                       <div className="mt-3 flex flex-wrap gap-2">
                         <StatusBadge status={activity.status ?? "published"} />
                         <span className="rounded-full bg-fog px-3 py-1 text-xs font-bold text-carbon/70">
@@ -1055,8 +988,8 @@ export function AdminActivitiesPanel() {
                         ) : null}
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-2 md:justify-end">
-                      <button type="button" disabled={saving} onClick={() => editActivity(activity)} className="admin-action-button">
+                    <div className="flex shrink-0 flex-wrap gap-2 lg:max-w-56 lg:justify-end">
+                      <button type="button" disabled={saving} onClick={() => editActivity(activity)} className="focus-ring rounded-full bg-pine px-5 py-2 text-xs font-black uppercase tracking-wide text-white disabled:opacity-50">
                         Editar
                       </button>
                       <button type="button" disabled={saving} onClick={() => duplicateActivity(activity)} className="admin-action-button">
@@ -1073,7 +1006,7 @@ export function AdminActivitiesPanel() {
                       <button type="button" disabled={saving} onClick={() => deleteActivity(activity)} className="admin-action-button text-ember">
                         Eliminar
                       </button>
-                    </div>
+                    </div></div>
                   </div>
                 </article>
               ))}
@@ -1097,27 +1030,32 @@ export function AdminActivitiesPanel() {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-2">
-      <p className="text-xs font-bold text-carbon/65">{label}</p>
-      <strong className="font-display text-xl font-black tabular-nums text-pine">{value}</strong>
+    <div className="rounded-xl border border-carbon/10 bg-white p-4 shadow-sm">
+      <strong className="block font-display text-3xl font-black tabular-nums text-pine">{value}</strong>
+      <p className="mt-1 text-xs font-black uppercase tracking-wide text-carbon/55">{label}</p>
     </div>
   );
 }
 
 function FormSection({
+  step,
   title,
   description,
   children
 }: {
+  step: string;
   title: string;
   description: string;
   children: ReactNode;
 }) {
   return (
-    <section className="grid gap-4 rounded-sm border border-carbon/10 bg-white p-4">
-      <div>
-        <h3 className="font-display text-xl font-black uppercase leading-none">{title}</h3>
-        <p className="mt-2 text-sm text-carbon/60">{description}</p>
+    <section className="grid gap-5 rounded-xl border border-carbon/10 bg-white p-4 sm:p-5">
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pine font-display text-sm font-black text-white">{step}</span>
+        <div>
+          <h3 className="font-display text-xl font-black uppercase leading-none">{title}</h3>
+          <p className="mt-2 text-sm leading-5 text-carbon/60">{description}</p>
+        </div>
       </div>
       {children}
     </section>

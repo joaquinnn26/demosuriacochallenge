@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Source_Sans_3 } from "next/font/google";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./globals.css";
-import { Footer } from "@/components/Footer";
-import { Navbar } from "@/components/Navbar";
-import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { SiteChrome } from "@/components/SiteChrome";
 
 const display = Montserrat({
   subsets: ["latin"],
@@ -44,10 +42,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${display.variable} ${sans.variable}`}>
       <body className="font-sans">
-        <Navbar />
-        {children}
-        <Footer />
-        <WhatsAppButton />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

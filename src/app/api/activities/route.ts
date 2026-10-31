@@ -2,19 +2,12 @@ import { NextResponse } from "next/server";
 import type { Activity } from "@/data/activities";
 import { readActivitiesFromStore, writeActivitiesToStore } from "@/lib/activityStore";
 import { isPublicActivity } from "@/lib/activityUtils";
-import { validateAdminSessionCookie, validateSupabaseAdminUser } from "@/lib/adminAuth";
-import { hasSupabaseBrowserEnv, hasSupabaseServerEnv } from "@/lib/supabase";
+import { validateAdminSession } from "@/lib/adminAuth";
 
 export const dynamic = "force-dynamic";
 
 async function validateAdminRequest(request: Request) {
-  if (!hasSupabaseBrowserEnv() || !hasSupabaseServerEnv()) return null;
-
-  const auth = await validateSupabaseAdminUser(request);
-  if (auth.error) return auth.error;
-  if (!auth.user) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
-
-  return validateAdminSessionCookie(request, auth.user);
+  return validateAdminSession(request);
 }
 
 export async function GET(request: Request) {

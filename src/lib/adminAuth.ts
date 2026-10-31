@@ -1,35 +1,20 @@
-import { createHmac, timingSafeEqual } from "crypto";
+import { createHmac, scryptSync, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
-import { createSupabaseAuthClient, hasSupabaseBrowserEnv, hasSupabaseServerEnv } from "@/lib/supabase";
 
 const cookieName = "suriaco_admin_session";
 const defaultSessionMinutes = 120;
 
-type AdminSessionPayload = {
-  sub: string;
-  email: string;
-  iat: number;
-  exp: number;
-};
-
-function base64UrlEncode(value: string) {
-  return Buffer.from(value, "utf8").toString("base64url");
-}
-
-function base64UrlDecode(value: string) {
-  return Buffer.from(value, "base64url").toString("utf8");
-}
+type AdminSessionPayload = { email: string; iat: number; exp: number };
 
 function getSessionSecret() {
-  const secret = process.env.ADMIN_SESSION_SECRET ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!secret) throw new Error("Falta ADMIN_SESSION_SECRET o SUPABASE_SERVICE_ROLE_KEY.");
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) throw new Error("Falta ADMIN_SESSION_SECRET.");
   return secret;
 }
 
 function getSessionMaxAgeSeconds() {
   const minutes = Number(process.env.ADMIN_SESSION_MINUTES ?? defaultSessionMinutes);
-  const safeMinutes = Number.isFinite(minutes) && minutes > 0 ? minutes : defaultSessionMinutes;
-  return Math.round(safeMinutes * 60);
+  return Math.round((Number.isFinite(minutes) && minutes > 0 ? minutes : defaultSessionMinutes) * 60);
 }
 
 function signPayload(encodedPayload: string) {
@@ -37,124 +22,61 @@ function signPayload(encodedPayload: string) {
 }
 
 function parseCookies(request: Request) {
-  return Object.fromEntries(
-    (request.headers.get("cookie") ?? "")
-      .split(";")
-      .map((cookie) => cookie.trim())
-      .filter(Boolean)
-      .map((cookie) => {
-        const [name, ...value] = cookie.split("=");
-        return [name, value.join("=")];
-      })
-  );
+  return Object.fromEntries((request.headers.get("cookie") ?? "").split(";").map((item) => item.trim()).filter(Boolean).map((item) => {
+    const [name, ...value] = item.split("=");
+    return [name, value.join("=")];
+  }));
 }
 
-function getBearerToken(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  return authHeader?.startsWith("Bearer ") ? authHeader.slice("Bearer ".length) : null;
+function safeEqual(left: string, right: string) {
+  const a = Buffer.from(left);
+  const b = Buffer.from(right);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
-function isAllowedAdminEmail(email: string | undefined) {
-  const allowedEmails = process.env.SUPABASE_ADMIN_EMAILS?.split(",")
-    .map((item) => item.trim().toLowerCase())
-    .filter(Boolean);
+export function verifyAdminCredentials(email: string, password: string) {
+  const expectedEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const passwordHash = process.env.ADMIN_PASSWORD_HASH;
+  if (!expectedEmail || !passwordHash) throw new Error("Faltan ADMIN_EMAIL o ADMIN_PASSWORD_HASH.");
 
-  if (!allowedEmails?.length) return true;
-  return allowedEmails.includes(email?.toLowerCase() ?? "");
+  const separator = passwordHash.includes(":") ? ":" : "$";
+  const [algorithm, salt, expectedHash] = passwordHash.split(separator);
+  if (algorithm !== "scrypt" || !salt || !expectedHash) throw new Error("ADMIN_PASSWORD_HASH no tiene un formato válido.");
+  const actualHash = scryptSync(password, salt, 64).toString("base64url");
+  return safeEqual(email.trim().toLowerCase(), expectedEmail) && safeEqual(actualHash, expectedHash);
 }
 
-export async function validateSupabaseAdminUser(request: Request) {
-  if (!hasSupabaseBrowserEnv() || !hasSupabaseServerEnv()) return { user: null, token: null };
-
-  const token = getBearerToken(request);
-  if (!token) {
-    return { error: NextResponse.json({ error: "No autorizado." }, { status: 401 }) };
-  }
-
-  const supabaseAuth = createSupabaseAuthClient(token);
-  const { data, error } = await supabaseAuth.auth.getUser();
-
-  if (error || !data.user) {
-    return { error: NextResponse.json({ error: "Sesión inválida." }, { status: 401 }) };
-  }
-
-  if (!isAllowedAdminEmail(data.user.email)) {
-    return { error: NextResponse.json({ error: "Usuario sin permisos de administración." }, { status: 403 }) };
-  }
-
-  return { user: data.user, token };
-}
-
-export function createAdminSessionValue(user: { id: string; email?: string }) {
+export function createAdminSessionValue(email: string) {
   const now = Math.floor(Date.now() / 1000);
-  const payload: AdminSessionPayload = {
-    sub: user.id,
-    email: user.email ?? "",
-    iat: now,
-    exp: now + getSessionMaxAgeSeconds()
-  };
-  const encodedPayload = base64UrlEncode(JSON.stringify(payload));
-  const signature = signPayload(encodedPayload);
-
-  return {
-    value: `${encodedPayload}.${signature}`,
-    expiresAt: payload.exp,
-    maxAgeSeconds: getSessionMaxAgeSeconds()
-  };
+  const payload: AdminSessionPayload = { email: email.trim().toLowerCase(), iat: now, exp: now + getSessionMaxAgeSeconds() };
+  const encodedPayload = Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
+  return { value: `${encodedPayload}.${signPayload(encodedPayload)}`, expiresAt: payload.exp, maxAgeSeconds: getSessionMaxAgeSeconds() };
 }
 
-export function validateAdminSessionCookie(request: Request, user: { id: string; email?: string }) {
+export function validateAdminSession(request: Request) {
   const sessionValue = parseCookies(request)[cookieName];
-  if (!sessionValue) {
-    return NextResponse.json({ error: "Sesión admin expirada." }, { status: 401 });
-  }
-
+  if (!sessionValue) return NextResponse.json({ error: "Sesión admin expirada." }, { status: 401 });
   const [encodedPayload, signature] = sessionValue.split(".");
-  if (!encodedPayload || !signature) {
+  if (!encodedPayload || !signature || !safeEqual(signature, signPayload(encodedPayload))) {
     return NextResponse.json({ error: "Sesión admin inválida." }, { status: 401 });
   }
-
-  const expectedSignature = signPayload(encodedPayload);
-  const signatureBuffer = Buffer.from(signature);
-  const expectedBuffer = Buffer.from(expectedSignature);
-
-  if (signatureBuffer.length !== expectedBuffer.length || !timingSafeEqual(signatureBuffer, expectedBuffer)) {
-    return NextResponse.json({ error: "Sesión admin inválida." }, { status: 401 });
-  }
-
-  let payload: AdminSessionPayload;
 
   try {
-    payload = JSON.parse(base64UrlDecode(encodedPayload)) as AdminSessionPayload;
-  } catch (error) {
+    const payload = JSON.parse(Buffer.from(encodedPayload, "base64url").toString("utf8")) as AdminSessionPayload;
+    const expectedEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    if (!expectedEmail || payload.exp <= Math.floor(Date.now() / 1000) || payload.email !== expectedEmail) {
+      return NextResponse.json({ error: "Sesión admin expirada." }, { status: 401 });
+    }
+  } catch {
     return NextResponse.json({ error: "Sesión admin inválida." }, { status: 401 });
   }
-
-  const now = Math.floor(Date.now() / 1000);
-
-  if (payload.exp <= now || payload.sub !== user.id || payload.email !== (user.email ?? "")) {
-    return NextResponse.json({ error: "Sesión admin expirada." }, { status: 401 });
-  }
-
   return null;
 }
 
 export function setAdminSessionCookie(response: NextResponse, value: string, maxAgeSeconds: number) {
-  response.cookies.set(cookieName, value, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: maxAgeSeconds
-  });
+  response.cookies.set(cookieName, value, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production", path: "/", maxAge: maxAgeSeconds });
 }
 
 export function clearAdminSessionCookie(response: NextResponse) {
-  response.cookies.set(cookieName, "", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 0
-  });
+  response.cookies.set(cookieName, "", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 0 });
 }

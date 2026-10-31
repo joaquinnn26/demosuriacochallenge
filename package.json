@@ -6,10 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "admin:hash": "node scripts/generate-admin-hash.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.112.4",
     "@types/leaflet": "^1.9.22",
     "leaflet": "^1.9.4",
     "next": "^14.2.5",
