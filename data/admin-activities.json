@@ -1,485 +1,487 @@
 [
-  {
-    "slug": "prueba1",
-    "name": "prueba1",
-    "category": "trekking",
-    "filters": [
-      "espana",
-      "un-dia",
-      "trekking"
-    ],
-    "status": "published",
-    "location": "madrid",
-    "googleMapsUrl": "https://www.google.com/maps/place/Villa+Carlos+Paz,+C%C3%B3rdoba/@-31.4120401,-64.582139,12z/data=!3m1!4b1!4m6!3m5!1s0x942d6640d6777c71:0x75c24ab6cb121bed!8m2!3d-31.4207828!4d-64.4992141!16zL20vMGNoc3Bt?entry=ttu&g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D",
-    "latitude": -31.4120401,
-    "longitude": -64.582139,
-    "difficulty": "Media",
-    "duration": "1 día",
-    "durationDays": 1,
-    "distance": "1 km",
-    "distanceKm": 1,
-    "elevation": "1 m",
-    "elevationM": 1,
-    "minAge": "1 años",
-    "minAgeYears": 1,
-    "maxParticipants": "1 personas",
-    "maxParticipantsCount": 1,
-    "price": "Consultar valor1",
-    "nextDate": "31 de octubre de 2026",
-    "nextDateIso": "2026-10-31",
-    "image": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80",
-    "images": [],
-    "imageAlt": "Imagen de prueba1",
-    "summary": "aa",
-    "description": "aa",
-    "routePoints": [
-      "Punto de encuentro confirmado con el grupo",
-      "Inicio con charla técnica y revisión de equipo",
-      "Desarrollo de la experiencia según ritmo y condiciones",
-      "Pausas, asistencia y acompañamiento durante la salida",
-      "Regreso y cierre de actividad"
-    ],
-    "includes": [
-      "Guía a cargo del grupo",
-      "Coordinación previa",
-      "Asistencia durante la actividad"
-    ],
-    "requiredGear": [
-      "Calzado de trekking",
-      "Agua",
-      "Abrigo"
-    ],
-    "recommendedGear": [
-      "Protección solar",
-      "Snack o comida de marcha"
-    ]
-  },
-  {
-    "slug": "trekking-con-astronomia",
-    "name": "Trekking con astronomía",
-    "category": "astronomia",
-    "filters": [
-      "un-dia",
-      "madrid-centro",
-      "espana",
-      "trekking",
-      "astronomia-picos"
-    ],
-    "location": "Sierra de Guadarrama, Madrid",
-    "googleMapsUrl": "https://www.google.com/maps?q=40.7930,-3.9760",
-    "latitude": 40.793,
-    "longitude": -3.976,
-    "difficulty": "Fácil",
-    "duration": "1 día",
-    "durationDays": 1,
-    "distance": "Caminata suave",
-    "elevation": "A confirmar",
-    "minAge": "Consultar",
-    "maxParticipants": "Cupo limitado",
-    "price": "Consultar valor",
-    "nextDate": "29 ago, 5/12/19 sep y 3 oct",
-    "image": "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=1400&q=80",
-    "imageAlt": "Cielo nocturno estrellado sobre silueta de montañas",
-    "summary": "Salida de trekking al atardecer con observación astronómica guiada desde zona de montaña.",
-    "description": "Una propuesta de día para caminar a ritmo tranquilo, llegar con luz al punto de observación y dedicar la noche a reconocer cielo, constelaciones y referencias astronómicas. Las fechas se cargan en una sola actividad para evitar duplicar fichas.",
-    "routePoints": [
-      "Encuentro del grupo",
-      "Caminata de aproximación",
-      "Punto alto de observación",
-      "Astronomía guiada",
-      "Regreso"
-    ],
-    "includes": [
-      "Guía/coordinador",
-      "Planificación de horarios",
-      "Orientación astronómica",
-      "Asistencia durante la actividad"
-    ],
-    "requiredGear": [
-      "Calzado de trekking",
-      "Agua",
-      "Abrigo",
-      "Linterna frontal"
-    ],
-    "recommendedGear": [
-      "Manta ligera",
-      "Gorro",
-      "Cámara",
-      "Snack"
-    ]
-  },
-  {
-    "slug": "navalmedio-12k",
-    "name": "12K Navalmedio",
-    "category": "trekking",
-    "filters": [
-      "un-dia",
-      "madrid-centro",
-      "espana",
-      "trekking"
-    ],
-    "location": "Navalmedio, Sierra de Guadarrama",
-    "googleMapsUrl": "https://www.google.com/maps?q=40.7590,-4.0190",
-    "latitude": 40.759,
-    "longitude": -4.019,
-    "difficulty": "Media",
-    "duration": "1 día",
-    "durationDays": 1,
-    "distance": "12 km",
-    "distanceKm": 12,
-    "elevation": "A confirmar",
-    "minAge": "Consultar",
-    "maxParticipants": "Cupo limitado",
-    "price": "Consultar valor",
-    "nextDate": "4 de octubre",
-    "image": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80",
-    "imageAlt": "Sendero de montaña con vistas abiertas",
-    "summary": "Trekking de 12 km por Navalmedio, pensado para quienes buscan una salida de día en la sierra.",
-    "description": "Actividad de una jornada en el entorno de Navalmedio. Antes de reservar se confirma punto de encuentro, ritmo del grupo, desnivel final y equipo necesario según condiciones de la fecha.",
-    "routePoints": [
-      "Punto de encuentro",
-      "Inicio del sendero",
-      "Tramo principal",
-      "Pausa panorámica",
-      "Regreso"
-    ],
-    "includes": [
-      "Guía a cargo del grupo",
-      "Coordinación previa",
-      "Botiquín de primeros auxilios",
-      "Asistencia durante la actividad"
-    ],
-    "requiredGear": [
-      "Calzado de trekking",
-      "Agua",
-      "Mochila chica",
-      "Abrigo"
-    ],
-    "recommendedGear": [
-      "Bastones",
-      "Gafas",
-      "Protección solar",
-      "Snack"
-    ]
-  },
-  {
-    "slug": "las-machotas-escorial-14k",
-    "name": "14K Las Machotas, El Escorial",
-    "category": "trekking",
-    "filters": [
-      "un-dia",
-      "madrid-centro",
-      "espana",
-      "trekking"
-    ],
-    "location": "El Escorial, Madrid",
-    "googleMapsUrl": "https://www.google.com/maps?q=40.5860,-4.1470",
-    "latitude": 40.586,
-    "longitude": -4.147,
-    "difficulty": "Media",
-    "duration": "1 día",
-    "durationDays": 1,
-    "distance": "14 km",
-    "distanceKm": 14,
-    "elevation": "A confirmar",
-    "minAge": "Consultar",
-    "maxParticipants": "Cupo limitado",
-    "price": "Consultar valor",
-    "nextDate": "24 de octubre",
-    "image": "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=1400&q=80",
-    "imageAlt": "Montañistas observando un valle desde una cumbre",
-    "summary": "Recorrido de 14 km por Las Machotas, con salida en la zona de El Escorial.",
-    "description": "Una salida de trekking de jornada completa con distancia moderada y terreno serrano. La ficha concentra la información base y permite ajustar detalles operativos cuando se confirme cada grupo.",
-    "routePoints": [
-      "Encuentro",
-      "Aproximación",
-      "Las Machotas",
-      "Descanso de ruta",
-      "Regreso guiado"
-    ],
-    "includes": [
-      "Guía a cargo del grupo",
-      "Coordinación previa",
-      "Planificación de horarios",
-      "Asistencia durante la actividad"
-    ],
-    "requiredGear": [
-      "Calzado de trekking",
-      "Agua",
-      "Mochila chica",
-      "Abrigo"
-    ],
-    "recommendedGear": [
-      "Bastones",
-      "Gorra",
-      "Gafas",
-      "Protección solar"
-    ]
-  },
-  {
-    "slug": "ribeira-sacra-galicia",
-    "name": "Ribeira Sacra, Galicia",
-    "category": "viajes",
-    "filters": [
-      "pernocta",
-      "espana",
-      "trekking"
-    ],
-    "location": "Ribeira Sacra, Galicia",
-    "googleMapsUrl": "https://www.google.com/maps?q=42.4150,-7.6200",
-    "latitude": 42.415,
-    "longitude": -7.62,
-    "difficulty": "Media",
-    "duration": "Más de 1 día",
-    "durationDays": 4,
-    "distance": "Variable según jornada",
-    "elevation": "Variable según jornada",
-    "minAge": "Consultar",
-    "maxParticipants": "Cupo limitado",
-    "price": "Consultar valor",
-    "nextDate": "9 al 12 de octubre",
-    "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
-    "imageAlt": "Paisaje verde de montaña y valle",
-    "summary": "Viaje de varios días a Galicia, con base en Ribeira Sacra y actividades de naturaleza.",
-    "description": "Programa con pernocta para combinar caminatas, paisaje y organización logística durante varios días. La duración exacta se comunica en la reserva según noches confirmadas y formato final del viaje.",
-    "routePoints": [
-      "Llegada del grupo",
-      "Actividad día 1",
-      "Actividad día 2",
-      "Actividad día 3",
-      "Regreso"
-    ],
-    "includes": [
-      "Guía/coordinación",
-      "Planificación previa",
-      "Itinerario de actividades",
-      "Asistencia durante el viaje"
-    ],
-    "requiredGear": [
-      "Calzado de trekking",
-      "Mochila",
-      "Abrigo",
-      "Bolso de viaje"
-    ],
-    "recommendedGear": [
-      "Bastones",
-      "Impermeable",
-      "Gafas",
-      "Protección solar"
-    ]
-  },
-  {
-    "slug": "cueva-valiente-san-rafael-14k",
-    "name": "Cueva Valiente - San Rafael 14K",
-    "category": "trekking",
-    "filters": [
-      "un-dia",
-      "madrid-centro",
-      "espana",
-      "trekking"
-    ],
-    "location": "San Rafael, Segovia",
-    "googleMapsUrl": "https://www.google.com/maps?q=40.7180,-4.1810",
-    "latitude": 40.718,
-    "longitude": -4.181,
-    "difficulty": "Media",
-    "duration": "1 día",
-    "durationDays": 1,
-    "distance": "14 km",
-    "distanceKm": 14,
-    "elevation": "A confirmar",
-    "minAge": "Consultar",
-    "maxParticipants": "Cupo limitado",
-    "price": "Consultar valor",
-    "nextDate": "7 de noviembre",
-    "image": "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=1400&q=80",
-    "imageAlt": "Grupo caminando por sendero entre montañas",
-    "summary": "Trekking de 14 km desde San Rafael hacia Cueva Valiente, en el centro de España.",
-    "description": "Salida de día completo para caminar por terreno de sierra con ritmo de grupo. Se revisa condición física, meteorología y equipo antes de confirmar la reserva.",
-    "routePoints": [
-      "Encuentro en San Rafael",
-      "Inicio de ruta",
-      "Cueva Valiente",
-      "Pausa de montaña",
-      "Regreso"
-    ],
-    "includes": [
-      "Guía a cargo del grupo",
-      "Coordinación previa",
-      "Botiquín de primeros auxilios",
-      "Asistencia durante la actividad"
-    ],
-    "requiredGear": [
-      "Calzado de trekking",
-      "Agua",
-      "Mochila chica",
-      "Abrigo"
-    ],
-    "recommendedGear": [
-      "Bastones",
-      "Gorra",
-      "Gafas",
-      "Protección solar"
-    ]
-  },
-  {
-    "slug": "robledondo-14k",
-    "name": "Robledondo 14K",
-    "category": "trekking",
-    "filters": [
-      "un-dia",
-      "madrid-centro",
-      "espana",
-      "trekking"
-    ],
-    "location": "Robledondo, Comunidad de Madrid",
-    "googleMapsUrl": "https://www.google.com/maps?q=40.5810,-4.2100",
-    "latitude": 40.581,
-    "longitude": -4.21,
-    "difficulty": "Media",
-    "duration": "1 día",
-    "durationDays": 1,
-    "distance": "14 km",
-    "distanceKm": 14,
-    "elevation": "A confirmar",
-    "minAge": "Consultar",
-    "maxParticipants": "Cupo limitado",
-    "price": "Consultar valor",
-    "nextDate": "28 de noviembre",
-    "image": "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1400&q=80",
-    "imageAlt": "Grupo caminando en fila por sendero de montaña",
-    "summary": "Salida de trekking de 14 km por Robledondo para cerrar la temporada de otoño.",
-    "description": "Una actividad de jornada completa en la sierra madrileña. La información operativa se confirma con el grupo inscrito para ajustar horario, punto de encuentro y material requerido.",
-    "routePoints": [
-      "Encuentro",
-      "Inicio de sendero",
-      "Tramo de montaña",
-      "Pausa panorámica",
-      "Regreso"
-    ],
-    "includes": [
-      "Guía a cargo del grupo",
-      "Coordinación previa",
-      "Planificación de ruta",
-      "Asistencia durante la actividad"
-    ],
-    "requiredGear": [
-      "Calzado de trekking",
-      "Agua",
-      "Mochila chica",
-      "Abrigo"
-    ],
-    "recommendedGear": [
-      "Bastones",
-      "Gorra",
-      "Gafas",
-      "Protección solar"
-    ]
-  },
-  {
-    "slug": "argentina-cordoba-champaqui-finca-carranza",
-    "name": "Argentina: Córdoba, Finca Carranza y Champaquí",
-    "category": "viajes",
-    "filters": [
-      "pernocta",
-      "sudamerica",
-      "argentina",
-      "trekking"
-    ],
-    "location": "Córdoba, Argentina",
-    "googleMapsUrl": "https://www.google.com/maps?q=-31.4201,-64.1888",
-    "latitude": -31.4201,
-    "longitude": -64.1888,
-    "difficulty": "Media",
-    "duration": "Más de 1 día",
-    "durationDays": 14,
-    "distance": "Programa de 13-14 días",
-    "elevation": "Según etapa",
-    "minAge": "Consultar",
-    "maxParticipants": "Cupo limitado",
-    "price": "Consultar valor",
-    "nextDate": "Febrero de 2027",
-    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80",
-    "imageAlt": "Cordillera con cumbres y valle bajo luz fría",
-    "summary": "Viaje a Córdoba con Finca Carranza, Champaquí y naturaleza serrana durante febrero de 2027.",
-    "description": "Programa extendido en Argentina para combinar viaje, montaña y experiencia local. La propuesta final contempla entre 13 y 14 días, con logística y requisitos comunicados antes de la reserva.",
-    "routePoints": [
-      "Llegada a Córdoba",
-      "Finca Carranza",
-      "Etapas de trekking",
-      "Champaquí",
-      "Cierre y regreso"
-    ],
-    "includes": [
-      "Coordinación del viaje",
-      "Planificación previa",
-      "Guía durante actividades",
-      "Asistencia durante el programa"
-    ],
-    "requiredGear": [
-      "Calzado de trekking",
-      "Mochila",
-      "Abrigo",
-      "Equipo personal de viaje"
-    ],
-    "recommendedGear": [
-      "Bastones",
-      "Impermeable",
-      "Gafas",
-      "Protección solar"
-    ]
-  },
-  {
-    "slug": "raquetas-nieve-guadarrama-sierra-norte",
-    "name": "Raquetas en nieve",
-    "category": "invernales",
-    "filters": [
-      "un-dia",
-      "madrid-centro",
-      "espana",
-      "invernales"
-    ],
-    "location": "Sierra de Guadarrama y Sierra Norte",
-    "googleMapsUrl": "https://www.google.com/maps?q=40.7930,-3.9760",
-    "latitude": 40.793,
-    "longitude": -3.976,
-    "difficulty": "Fácil",
-    "duration": "1 día",
-    "durationDays": 1,
-    "distance": "Variable según nieve",
-    "elevation": "Variable según ruta",
-    "minAge": "Consultar",
-    "maxParticipants": "Cupo limitado",
-    "price": "Consultar valor",
-    "nextDate": "Desde diciembre, sábados y domingos",
-    "image": "https://images.unsplash.com/photo-1489447068241-b3490214e879?auto=format&fit=crop&w=1400&q=80",
-    "imageAlt": "Montaña nevada con huellas sobre la nieve",
-    "summary": "Salidas invernales con raquetas de nieve todos los fines de semana desde diciembre.",
-    "description": "Actividad de invierno sujeta a condiciones de nieve. Se programa sábados y domingos en Sierra de Guadarrama o Sierra Norte, definiendo ruta final según meteorología, estado del terreno y nivel del grupo.",
-    "routePoints": [
-      "Confirmación de condiciones",
-      "Punto de encuentro",
-      "Inicio con raquetas",
-      "Ruta invernal",
-      "Regreso"
-    ],
-    "includes": [
-      "Guía a cargo del grupo",
-      "Coordinación previa",
-      "Planificación según nieve",
-      "Asistencia durante la actividad"
-    ],
-    "requiredGear": [
-      "Ropa de abrigo",
-      "Calzado impermeable",
-      "Agua",
-      "Guantes"
-    ],
-    "recommendedGear": [
-      "Gafas de sol",
-      "Gorro",
-      "Protección solar",
-      "Snack"
-    ]
-  }
+    {
+        "slug":  "prueba1",
+        "name":  "prueba1",
+        "category":  "trekking",
+        "filters":  [
+                        "espana",
+                        "un-dia",
+                        "trekking"
+                    ],
+        "status":  "published",
+        "location":  "madrid",
+        "googleMapsUrl":  "https://www.google.com/maps/place/Villa+Carlos+Paz,+C%C3%B3rdoba/@-31.4120401,-64.582139,12z/data=!3m1!4b1!4m6!3m5!1s0x942d6640d6777c71:0x75c24ab6cb121bed!8m2!3d-31.4207828!4d-64.4992141!16zL20vMGNoc3Bt?entry=ttu\u0026g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D",
+        "latitude":  -31.4120401,
+        "longitude":  -64.582139,
+        "difficulty":  "Media",
+        "duration":  "1 día",
+        "durationDays":  1,
+        "distance":  "1 km",
+        "distanceKm":  1,
+        "elevation":  "1 m",
+        "elevationM":  1,
+        "minAge":  "1 años",
+        "minAgeYears":  1,
+        "maxParticipants":  "1 personas",
+        "maxParticipantsCount":  1,
+        "price":  "Consultar valor1",
+        "nextDate":  "31 de octubre de 2026",
+        "nextDateIso":  "2026-10-31",
+        "image":  "/uploads/activities/2026-10-31-dda27b8a-daeb-4626-ae61-8b63e8480f89.jpg",
+        "images":  [
+                       "/uploads/activities/2026-10-31-dda27b8a-daeb-4626-ae61-8b63e8480f89.jpg"
+                   ],
+        "imageAlt":  "Imagen de prueba1",
+        "summary":  "aa",
+        "description":  "aa",
+        "routePoints":  [
+                            "Punto de encuentro confirmado con el grupo",
+                            "Inicio con charla técnica y revisión de equipo",
+                            "Desarrollo de la experiencia según ritmo y condiciones",
+                            "Pausas, asistencia y acompañamiento durante la salida",
+                            "Regreso y cierre de actividad"
+                        ],
+        "includes":  [
+                         "Guía a cargo del grupo",
+                         "Coordinación previa",
+                         "Asistencia durante la actividad"
+                     ],
+        "requiredGear":  [
+                             "Calzado de trekking",
+                             "Agua",
+                             "Abrigo"
+                         ],
+        "recommendedGear":  [
+                                "Protección solar",
+                                "Snack o comida de marcha"
+                            ]
+    },
+    {
+        "slug":  "trekking-con-astronomia",
+        "name":  "Trekking con astronomía",
+        "category":  "astronomia",
+        "filters":  [
+                        "un-dia",
+                        "madrid-centro",
+                        "espana",
+                        "trekking",
+                        "astronomia-picos"
+                    ],
+        "location":  "Sierra de Guadarrama, Madrid",
+        "googleMapsUrl":  "https://www.google.com/maps?q=40.7930,-3.9760",
+        "latitude":  40.793,
+        "longitude":  -3.976,
+        "difficulty":  "Fácil",
+        "duration":  "1 día",
+        "durationDays":  1,
+        "distance":  "Caminata suave",
+        "elevation":  "A confirmar",
+        "minAge":  "Consultar",
+        "maxParticipants":  "Cupo limitado",
+        "price":  "Consultar valor",
+        "nextDate":  "29 ago, 5/12/19 sep y 3 oct",
+        "image":  "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format\u0026fit=crop\u0026w=1400\u0026q=80",
+        "imageAlt":  "Cielo nocturno estrellado sobre silueta de montañas",
+        "summary":  "Salida de trekking al atardecer con observación astronómica guiada desde zona de montaña.",
+        "description":  "Una propuesta de día para caminar a ritmo tranquilo, llegar con luz al punto de observación y dedicar la noche a reconocer cielo, constelaciones y referencias astronómicas. Las fechas se cargan en una sola actividad para evitar duplicar fichas.",
+        "routePoints":  [
+                            "Encuentro del grupo",
+                            "Caminata de aproximación",
+                            "Punto alto de observación",
+                            "Astronomía guiada",
+                            "Regreso"
+                        ],
+        "includes":  [
+                         "Guía/coordinador",
+                         "Planificación de horarios",
+                         "Orientación astronómica",
+                         "Asistencia durante la actividad"
+                     ],
+        "requiredGear":  [
+                             "Calzado de trekking",
+                             "Agua",
+                             "Abrigo",
+                             "Linterna frontal"
+                         ],
+        "recommendedGear":  [
+                                "Manta ligera",
+                                "Gorro",
+                                "Cámara",
+                                "Snack"
+                            ]
+    },
+    {
+        "slug":  "navalmedio-12k",
+        "name":  "12K Navalmedio",
+        "category":  "trekking",
+        "filters":  [
+                        "un-dia",
+                        "madrid-centro",
+                        "espana",
+                        "trekking"
+                    ],
+        "location":  "Navalmedio, Sierra de Guadarrama",
+        "googleMapsUrl":  "https://www.google.com/maps?q=40.7590,-4.0190",
+        "latitude":  40.759,
+        "longitude":  -4.019,
+        "difficulty":  "Media",
+        "duration":  "1 día",
+        "durationDays":  1,
+        "distance":  "12 km",
+        "distanceKm":  12,
+        "elevation":  "A confirmar",
+        "minAge":  "Consultar",
+        "maxParticipants":  "Cupo limitado",
+        "price":  "Consultar valor",
+        "nextDate":  "4 de octubre",
+        "image":  "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format\u0026fit=crop\u0026w=1400\u0026q=80",
+        "imageAlt":  "Sendero de montaña con vistas abiertas",
+        "summary":  "Trekking de 12 km por Navalmedio, pensado para quienes buscan una salida de día en la sierra.",
+        "description":  "Actividad de una jornada en el entorno de Navalmedio. Antes de reservar se confirma punto de encuentro, ritmo del grupo, desnivel final y equipo necesario según condiciones de la fecha.",
+        "routePoints":  [
+                            "Punto de encuentro",
+                            "Inicio del sendero",
+                            "Tramo principal",
+                            "Pausa panorámica",
+                            "Regreso"
+                        ],
+        "includes":  [
+                         "Guía a cargo del grupo",
+                         "Coordinación previa",
+                         "Botiquín de primeros auxilios",
+                         "Asistencia durante la actividad"
+                     ],
+        "requiredGear":  [
+                             "Calzado de trekking",
+                             "Agua",
+                             "Mochila chica",
+                             "Abrigo"
+                         ],
+        "recommendedGear":  [
+                                "Bastones",
+                                "Gafas",
+                                "Protección solar",
+                                "Snack"
+                            ]
+    },
+    {
+        "slug":  "las-machotas-escorial-14k",
+        "name":  "14K Las Machotas, El Escorial",
+        "category":  "trekking",
+        "filters":  [
+                        "un-dia",
+                        "madrid-centro",
+                        "espana",
+                        "trekking"
+                    ],
+        "location":  "El Escorial, Madrid",
+        "googleMapsUrl":  "https://www.google.com/maps?q=40.5860,-4.1470",
+        "latitude":  40.586,
+        "longitude":  -4.147,
+        "difficulty":  "Media",
+        "duration":  "1 día",
+        "durationDays":  1,
+        "distance":  "14 km",
+        "distanceKm":  14,
+        "elevation":  "A confirmar",
+        "minAge":  "Consultar",
+        "maxParticipants":  "Cupo limitado",
+        "price":  "Consultar valor",
+        "nextDate":  "24 de octubre",
+        "image":  "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format\u0026fit=crop\u0026w=1400\u0026q=80",
+        "imageAlt":  "Montañistas observando un valle desde una cumbre",
+        "summary":  "Recorrido de 14 km por Las Machotas, con salida en la zona de El Escorial.",
+        "description":  "Una salida de trekking de jornada completa con distancia moderada y terreno serrano. La ficha concentra la información base y permite ajustar detalles operativos cuando se confirme cada grupo.",
+        "routePoints":  [
+                            "Encuentro",
+                            "Aproximación",
+                            "Las Machotas",
+                            "Descanso de ruta",
+                            "Regreso guiado"
+                        ],
+        "includes":  [
+                         "Guía a cargo del grupo",
+                         "Coordinación previa",
+                         "Planificación de horarios",
+                         "Asistencia durante la actividad"
+                     ],
+        "requiredGear":  [
+                             "Calzado de trekking",
+                             "Agua",
+                             "Mochila chica",
+                             "Abrigo"
+                         ],
+        "recommendedGear":  [
+                                "Bastones",
+                                "Gorra",
+                                "Gafas",
+                                "Protección solar"
+                            ]
+    },
+    {
+        "slug":  "ribeira-sacra-galicia",
+        "name":  "Ribeira Sacra, Galicia",
+        "category":  "viajes",
+        "filters":  [
+                        "pernocta",
+                        "espana",
+                        "trekking"
+                    ],
+        "location":  "Ribeira Sacra, Galicia",
+        "googleMapsUrl":  "https://www.google.com/maps?q=42.4150,-7.6200",
+        "latitude":  42.415,
+        "longitude":  -7.62,
+        "difficulty":  "Media",
+        "duration":  "Más de 1 día",
+        "durationDays":  4,
+        "distance":  "Variable según jornada",
+        "elevation":  "Variable según jornada",
+        "minAge":  "Consultar",
+        "maxParticipants":  "Cupo limitado",
+        "price":  "Consultar valor",
+        "nextDate":  "9 al 12 de octubre",
+        "image":  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format\u0026fit=crop\u0026w=1400\u0026q=80",
+        "imageAlt":  "Paisaje verde de montaña y valle",
+        "summary":  "Viaje de varios días a Galicia, con base en Ribeira Sacra y actividades de naturaleza.",
+        "description":  "Programa con pernocta para combinar caminatas, paisaje y organización logística durante varios días. La duración exacta se comunica en la reserva según noches confirmadas y formato final del viaje.",
+        "routePoints":  [
+                            "Llegada del grupo",
+                            "Actividad día 1",
+                            "Actividad día 2",
+                            "Actividad día 3",
+                            "Regreso"
+                        ],
+        "includes":  [
+                         "Guía/coordinación",
+                         "Planificación previa",
+                         "Itinerario de actividades",
+                         "Asistencia durante el viaje"
+                     ],
+        "requiredGear":  [
+                             "Calzado de trekking",
+                             "Mochila",
+                             "Abrigo",
+                             "Bolso de viaje"
+                         ],
+        "recommendedGear":  [
+                                "Bastones",
+                                "Impermeable",
+                                "Gafas",
+                                "Protección solar"
+                            ]
+    },
+    {
+        "slug":  "cueva-valiente-san-rafael-14k",
+        "name":  "Cueva Valiente - San Rafael 14K",
+        "category":  "trekking",
+        "filters":  [
+                        "un-dia",
+                        "madrid-centro",
+                        "espana",
+                        "trekking"
+                    ],
+        "location":  "San Rafael, Segovia",
+        "googleMapsUrl":  "https://www.google.com/maps?q=40.7180,-4.1810",
+        "latitude":  40.718,
+        "longitude":  -4.181,
+        "difficulty":  "Media",
+        "duration":  "1 día",
+        "durationDays":  1,
+        "distance":  "14 km",
+        "distanceKm":  14,
+        "elevation":  "A confirmar",
+        "minAge":  "Consultar",
+        "maxParticipants":  "Cupo limitado",
+        "price":  "Consultar valor",
+        "nextDate":  "7 de noviembre",
+        "image":  "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format\u0026fit=crop\u0026w=1400\u0026q=80",
+        "imageAlt":  "Grupo caminando por sendero entre montañas",
+        "summary":  "Trekking de 14 km desde San Rafael hacia Cueva Valiente, en el centro de España.",
+        "description":  "Salida de día completo para caminar por terreno de sierra con ritmo de grupo. Se revisa condición física, meteorología y equipo antes de confirmar la reserva.",
+        "routePoints":  [
+                            "Encuentro en San Rafael",
+                            "Inicio de ruta",
+                            "Cueva Valiente",
+                            "Pausa de montaña",
+                            "Regreso"
+                        ],
+        "includes":  [
+                         "Guía a cargo del grupo",
+                         "Coordinación previa",
+                         "Botiquín de primeros auxilios",
+                         "Asistencia durante la actividad"
+                     ],
+        "requiredGear":  [
+                             "Calzado de trekking",
+                             "Agua",
+                             "Mochila chica",
+                             "Abrigo"
+                         ],
+        "recommendedGear":  [
+                                "Bastones",
+                                "Gorra",
+                                "Gafas",
+                                "Protección solar"
+                            ]
+    },
+    {
+        "slug":  "robledondo-14k",
+        "name":  "Robledondo 14K",
+        "category":  "trekking",
+        "filters":  [
+                        "un-dia",
+                        "madrid-centro",
+                        "espana",
+                        "trekking"
+                    ],
+        "location":  "Robledondo, Comunidad de Madrid",
+        "googleMapsUrl":  "https://www.google.com/maps?q=40.5810,-4.2100",
+        "latitude":  40.581,
+        "longitude":  -4.21,
+        "difficulty":  "Media",
+        "duration":  "1 día",
+        "durationDays":  1,
+        "distance":  "14 km",
+        "distanceKm":  14,
+        "elevation":  "A confirmar",
+        "minAge":  "Consultar",
+        "maxParticipants":  "Cupo limitado",
+        "price":  "Consultar valor",
+        "nextDate":  "28 de noviembre",
+        "image":  "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format\u0026fit=crop\u0026w=1400\u0026q=80",
+        "imageAlt":  "Grupo caminando en fila por sendero de montaña",
+        "summary":  "Salida de trekking de 14 km por Robledondo para cerrar la temporada de otoño.",
+        "description":  "Una actividad de jornada completa en la sierra madrileña. La información operativa se confirma con el grupo inscrito para ajustar horario, punto de encuentro y material requerido.",
+        "routePoints":  [
+                            "Encuentro",
+                            "Inicio de sendero",
+                            "Tramo de montaña",
+                            "Pausa panorámica",
+                            "Regreso"
+                        ],
+        "includes":  [
+                         "Guía a cargo del grupo",
+                         "Coordinación previa",
+                         "Planificación de ruta",
+                         "Asistencia durante la actividad"
+                     ],
+        "requiredGear":  [
+                             "Calzado de trekking",
+                             "Agua",
+                             "Mochila chica",
+                             "Abrigo"
+                         ],
+        "recommendedGear":  [
+                                "Bastones",
+                                "Gorra",
+                                "Gafas",
+                                "Protección solar"
+                            ]
+    },
+    {
+        "slug":  "argentina-cordoba-champaqui-finca-carranza",
+        "name":  "Argentina: Córdoba, Finca Carranza y Champaquí",
+        "category":  "viajes",
+        "filters":  [
+                        "pernocta",
+                        "sudamerica",
+                        "argentina",
+                        "trekking"
+                    ],
+        "location":  "Córdoba, Argentina",
+        "googleMapsUrl":  "https://www.google.com/maps?q=-31.4201,-64.1888",
+        "latitude":  -31.4201,
+        "longitude":  -64.1888,
+        "difficulty":  "Media",
+        "duration":  "Más de 1 día",
+        "durationDays":  14,
+        "distance":  "Programa de 13-14 días",
+        "elevation":  "Según etapa",
+        "minAge":  "Consultar",
+        "maxParticipants":  "Cupo limitado",
+        "price":  "Consultar valor",
+        "nextDate":  "Febrero de 2027",
+        "image":  "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format\u0026fit=crop\u0026w=1400\u0026q=80",
+        "imageAlt":  "Cordillera con cumbres y valle bajo luz fría",
+        "summary":  "Viaje a Córdoba con Finca Carranza, Champaquí y naturaleza serrana durante febrero de 2027.",
+        "description":  "Programa extendido en Argentina para combinar viaje, montaña y experiencia local. La propuesta final contempla entre 13 y 14 días, con logística y requisitos comunicados antes de la reserva.",
+        "routePoints":  [
+                            "Llegada a Córdoba",
+                            "Finca Carranza",
+                            "Etapas de trekking",
+                            "Champaquí",
+                            "Cierre y regreso"
+                        ],
+        "includes":  [
+                         "Coordinación del viaje",
+                         "Planificación previa",
+                         "Guía durante actividades",
+                         "Asistencia durante el programa"
+                     ],
+        "requiredGear":  [
+                             "Calzado de trekking",
+                             "Mochila",
+                             "Abrigo",
+                             "Equipo personal de viaje"
+                         ],
+        "recommendedGear":  [
+                                "Bastones",
+                                "Impermeable",
+                                "Gafas",
+                                "Protección solar"
+                            ]
+    },
+    {
+        "slug":  "raquetas-nieve-guadarrama-sierra-norte",
+        "name":  "Raquetas en nieve",
+        "category":  "invernales",
+        "filters":  [
+                        "un-dia",
+                        "madrid-centro",
+                        "espana",
+                        "invernales"
+                    ],
+        "location":  "Sierra de Guadarrama y Sierra Norte",
+        "googleMapsUrl":  "https://www.google.com/maps?q=40.7930,-3.9760",
+        "latitude":  40.793,
+        "longitude":  -3.976,
+        "difficulty":  "Fácil",
+        "duration":  "1 día",
+        "durationDays":  1,
+        "distance":  "Variable según nieve",
+        "elevation":  "Variable según ruta",
+        "minAge":  "Consultar",
+        "maxParticipants":  "Cupo limitado",
+        "price":  "Consultar valor",
+        "nextDate":  "Desde diciembre, sábados y domingos",
+        "image":  "https://images.unsplash.com/photo-1489447068241-b3490214e879?auto=format\u0026fit=crop\u0026w=1400\u0026q=80",
+        "imageAlt":  "Montaña nevada con huellas sobre la nieve",
+        "summary":  "Salidas invernales con raquetas de nieve todos los fines de semana desde diciembre.",
+        "description":  "Actividad de invierno sujeta a condiciones de nieve. Se programa sábados y domingos en Sierra de Guadarrama o Sierra Norte, definiendo ruta final según meteorología, estado del terreno y nivel del grupo.",
+        "routePoints":  [
+                            "Confirmación de condiciones",
+                            "Punto de encuentro",
+                            "Inicio con raquetas",
+                            "Ruta invernal",
+                            "Regreso"
+                        ],
+        "includes":  [
+                         "Guía a cargo del grupo",
+                         "Coordinación previa",
+                         "Planificación según nieve",
+                         "Asistencia durante la actividad"
+                     ],
+        "requiredGear":  [
+                             "Ropa de abrigo",
+                             "Calzado impermeable",
+                             "Agua",
+                             "Guantes"
+                         ],
+        "recommendedGear":  [
+                                "Gafas de sol",
+                                "Gorro",
+                                "Protección solar",
+                                "Snack"
+                            ]
+    }
 ]
